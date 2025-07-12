@@ -1,0 +1,18 @@
+.slides-container {
+    text-align: center;
+    padding: 20px;
+  }
+  
+  .slide-image {
+    max-width: 100%;
+    height: auto;
+    border: 1px solid #ccc;
+    margin-bottom: 16px;
+  }
+  
+  .slide-controls button {
+    margin: 0 10px;
+    padding: 10px 20px;
+    font-size: 16px;
+  }
+  
