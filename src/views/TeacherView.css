@@ -1,0 +1,48 @@
+.teacher-container {
+    display: flex;
+    height: 100vh;
+    background-color: #f8f9fa;
+  }
+
+  .slide-area {
+    flex: 3;
+    display: flex;
+    flex-direction: column;
+    padding: 12px;
+  }
+
+  .slide-box {
+    flex: 1;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .slide-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 12px;
+    padding: 10px;
+    background-color: #d8f0d8;
+    border-top: 1px solid #ccc;
+    border-radius: 8px;
+  }
+
+  .nav-button,
+  .end-session,
+  .student-link,
+  .teacher-button {
+    padding: 8px 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    background-color: #6b8f2b;
+    color: white;
+    cursor: pointer;
+    margin-right: 8px;
+  }
+
+  .end-session {
+    background-color: #c0392b;
+  }
+

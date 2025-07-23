@@ -1,0 +1,4 @@
+.run-button:active {
+    transform: translateY(1px);
+    background-color: #4a6b1f; /* Even darker when pressed */
+}

@@ -1,0 +1,112 @@
+/* ========= Layout Containers ========= */
+
+.tic-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+  background-color: #f37a7a;
+}
+
+.teacher-editor-terminal {
+  display: flex;
+  flex: 1;
+  gap: 12px;
+  padding: 12px;
+  min-height: 400px; /* Ensures scrolling space */
+}
+
+/* ========= Code Editor Pane ========= */
+
+.teacher-editor-container {
+  flex: 1;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  padding: 0;
+  border: 1px solid #dee2e6;
+  max-height: 100%;
+}
+
+/* For <pre> fallback — not used if you're using Monaco */
+.teacher-readonly-code {
+  white-space: pre-wrap;
+  background-color: #1e1e1e;
+  color: #d4d4d4;
+  font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+  font-size: 0.9em;
+  line-height: 20px;
+  padding: 16px;
+  border-radius: 6px;
+  overflow: auto;
+  height: 100%;
+}
+
+/* ========= Terminal Styling ========= */
+
+.teacher-terminal-pane {
+  flex: 1;
+  background-color: #1e1e1e;
+  color: white;
+  border-radius: 8px;
+  overflow: auto;
+  border: 1px solid #2c2c2c;
+  padding: 10px;
+  box-sizing: border-box;
+  min-height: 200px;
+  max-height: 100%;
+}
+
+/* Terminal inner scroll area */
+.teacher-terminal-pane .xterm-viewport {
+  overflow-y: auto !important;
+  max-height: 100% !important;
+}
+
+/* Terminal output rows */
+.teacher-terminal-pane .xterm-rows {
+  font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+  font-size: 0.9em;
+  line-height: 1.6;
+  padding: 16px 20px !important;
+}
+
+/* Terminal background & text override */
+.teacher-terminal-pane .xterm-viewport,
+.teacher-terminal-pane .xterm-screen {
+  background-color: #1e1e1e !important;
+  color: #cccccc !important;
+}
+
+/* Terminal cursor & selection */
+.teacher-terminal-pane .xterm-cursor {
+  background-color: transparent !important;
+  border-left: none !important;
+}
+
+.teacher-terminal-pane .xterm-selection {
+  background-color: #dcdcaa !important;
+  opacity: 0.3;
+}
+
+/* Scrollbar styling */
+.teacher-terminal-pane::-webkit-scrollbar {
+  width: 8px;
+}
+
+.teacher-terminal-pane::-webkit-scrollbar-thumb {
+  background-color: #333;
+  border-radius: 4px;
+}
+
+/* ========= Header ========= */
+
+.inspect-header {
+  margin: 14px 0 16px 14px;
+  color: #2c3e50;
+  font-size: 1.5rem;
+  font-weight: 600;
+}

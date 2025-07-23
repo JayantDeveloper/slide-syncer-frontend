@@ -62,17 +62,6 @@ function Slides({ isTeacher }) {
     };
   }, [sessionCode]);
 
-  function changeSlide(newIndex) {
-    if (!isTeacher) return; // prevent students from changing slides
-  
-    if (newIndex >= 0 && newIndex < slides.length) {
-      setCurrentIndex(newIndex);
-      if (ws.current && ws.current.readyState === WebSocket.OPEN) {
-        ws.current.send(JSON.stringify({ type: 'change', slide: newIndex }));
-      }
-    }
-  }
-
   if (loading) {
     return <div className="slides-container">Loading slides...</div>;
   }
@@ -112,15 +101,6 @@ function Slides({ isTeacher }) {
             >
               {`${window.location.origin}/student/${sessionCode}`}
             </div>
-          </div>
-          <div className="slide-controls">
-            <button onClick={() => changeSlide(currentIndex - 1)} disabled={currentIndex === 0}>
-              Previous
-            </button>
-            <span>Slide {currentIndex + 1} of {slides.length}</span>
-            <button onClick={() => changeSlide(currentIndex + 1)} disabled={currentIndex === slides.length - 1}>
-              Next
-            </button>
           </div>
         </>
       )}

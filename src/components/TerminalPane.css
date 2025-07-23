@@ -1,0 +1,54 @@
+/* Layout */
+.terminal-wrapper {
+    width: 100%;
+    height: 100%;
+    padding: 16px;
+  }
+  
+  .terminal-pane {
+    height: 300px;
+    width: 100%;
+    overflow: hidden; 
+    border: 1px solid #333;
+    border-radius: 4px;
+    background-color: #1e1e1e;
+  }
+  
+  /* Style the terminal content */
+  .terminal-pane .xterm-viewport,
+  .terminal-pane .xterm-screen {
+    background-color: #1e1e1e !important; /* Match container */
+    color: #cccccc !important; /* Light text */
+  }
+  
+  /* Terminal font and padding */
+  .terminal-pane .xterm-rows {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.9em;
+    line-height: 1.6;
+    padding: 16px 20px !important; /* ✅ More top/bottom and left/right space */
+    color: #cccccc;
+  }
+  
+  /* Cursor styling */
+  .terminal-pane .xterm-cursor {
+    background-color: transparent !important;
+    border-left: none !important;
+  }
+  
+  /* Selection styling */
+  .terminal-pane .xterm-selection {
+    background-color: #dcdcaa !important;
+    opacity: 0.3;
+  }
+  
+  /* Optional: Scrollbar styling */
+  .terminal-pane::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  .terminal-pane::-webkit-scrollbar-thumb {
+    background-color: #333;
+    border-radius: 4px;
+  }
+  

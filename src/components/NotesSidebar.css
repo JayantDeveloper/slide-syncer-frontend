@@ -1,0 +1,18 @@
+.notes-sidebar {
+  padding: 20px;
+  width: 300px;
+  background-color: #f6fff6;
+  border-left: 1px solid #ccc;
+  overflow-y: auto;
+}
+
+.notes-sidebar h3 {
+  margin-top: 0;
+  color: #386641;
+}
+
+.notes-sidebar p {
+  white-space: pre-wrap;
+  line-height: 1.5;
+  color: #333;
+}
