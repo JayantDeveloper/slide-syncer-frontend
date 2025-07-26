@@ -1,13 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Slides from "../components/Slides";
 import EditorPane from "../components/EditorPane";
 import RunButton from "../components/RunButton";
 import TerminalPane from "../components/TerminalPane";
 import "./StudentView.css";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 import { useParams } from "react-router-dom";
 
 const BACKEND_BASE_URL = "http://localhost:4000";
+const STARTER_CODE = `# Write your code here\nprint("Hello, World!")\n`;
 
 export default function StudentView() {
   const { sessionCode } = useParams();
@@ -15,7 +16,61 @@ export default function StudentView() {
   const [studentId] = useState(() => localStorage.getItem("studentId") || uuidv4());
   const [studentName] = useState(() => localStorage.getItem("studentName") || "Unnamed Student");
   const [output, setOutput] = useState("");
+  const [editorLocked, setEditorLocked] = useState(false);
+  const [codingSlides, setCodingSlides] = useState([]);
+  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
+  const [pendingSlideIndex, setPendingSlideIndex] = useState(null);
+  const wsRef = useRef(null);
 
+  // Fetch coding slide indices
+  useEffect(() => {
+    const fetchCodingSlides = async () => {
+      try {
+        const res = await fetch(`${BACKEND_BASE_URL}/api/sessions/${sessionCode}/coding-slides`);
+        const { codingSlides } = await res.json();
+        setCodingSlides(codingSlides);
+      } catch (err) {
+        console.error("Failed to load coding slide info:", err);
+      }
+    };
+
+    fetchCodingSlides();
+  }, [sessionCode]);
+
+  // WebSocket for slide sync and editor lock
+  useEffect(() => {
+    const ws = new WebSocket("ws://localhost:4000");
+    wsRef.current = ws;
+
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+
+      if (data.type === "lock-editors" && data.sessionCode === sessionCode) {
+        setEditorLocked(data.locked);
+      }
+
+      if (data.type === "sync") {
+        setPendingSlideIndex(data.slide); // only store here
+      }
+    };
+
+    return () => ws.close();
+  }, [sessionCode]);
+
+  // Set slide and editor content once codingSlides + sync message are ready
+  useEffect(() => {
+    if (pendingSlideIndex === null || codingSlides.length === 0) return;
+
+    setCurrentSlideIndex(pendingSlideIndex);
+
+    if (codingSlides.includes(pendingSlideIndex)) {
+      setEditorContent(STARTER_CODE);
+    } else {
+      setEditorContent("");
+    }
+  }, [pendingSlideIndex, codingSlides]);
+
+  // Post student code/output every 3s
   useEffect(() => {
     const interval = setInterval(() => {
       fetch(`${BACKEND_BASE_URL}/api/sessions/${sessionCode}/code`, {
@@ -33,19 +88,32 @@ export default function StudentView() {
     return () => clearInterval(interval);
   }, [sessionCode, studentId, studentName, editorContent, output]);
 
-  return (
+  const codingSlidesReady = codingSlides.length > 0;
+  const isCodeSlide = codingSlidesReady && codingSlides.includes(currentSlideIndex);
 
+  console.log(`🧠 Slide ${currentSlideIndex} - ${isCodeSlide ? "CODING" : "NON-CODING"}`);
+
+  return (
     <div className="student-container">
-      <div className="student-left">
-        <Slides isTeacher={false} sessionCode={sessionCode} />
-      </div>
-      <div className="student-right">
-        <div className="editor-container">
-          <EditorPane onCodeChange={setEditorContent} />
-          <RunButton onOutput={setOutput} />
+      <div className={`student-left ${!isCodeSlide ? "full-width" : ""}`}>
+        <div className={`slide-wrapper ${!isCodeSlide ? "shrink" : ""}`}>
+          <Slides isTeacher={false} sessionCode={sessionCode} />
         </div>
-        <TerminalPane onOutputChange={setOutput} />
       </div>
+
+      {isCodeSlide && (
+        <div className="student-right">
+          <div className="editor-container">
+            <EditorPane
+              value={editorContent}
+              onCodeChange={setEditorContent}
+              readOnly={editorLocked}
+            />
+            <RunButton onOutput={setOutput} />
+          </div>
+          <TerminalPane onOutputChange={setOutput} />
+        </div>
+      )}
     </div>
   );
 }

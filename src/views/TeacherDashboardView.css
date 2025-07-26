@@ -110,6 +110,16 @@
   border-radius: 6px;
   text-decoration: none;
   font-size: 0.9em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+.view-link-cell {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .view-link:hover {
