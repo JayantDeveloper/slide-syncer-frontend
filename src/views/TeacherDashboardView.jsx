@@ -3,18 +3,16 @@ import './TeacherDashboardView.css';
 import NavigationBar from "../components/NavigationBar";
 import NotesSidebar from '../components/NotesSidebar';
 import { useParams, useNavigate } from 'react-router-dom';
-
-const BACKEND_BASE_URL = "http://localhost:4000";
+import { BACKEND_BASE_URL } from "../config";
 
 export default function TeacherDashboardView() {
   const { sessionCode } = useParams();
   const navigate = useNavigate();
   const [students, setStudents] = useState([]);
-  const [notes, setNotes] = useState([]);               // ✅ Add notes state
-  const [currentIndex, setCurrentIndex] = useState(0);  // ✅ Add current slide index
+  const [notes, setNotes] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const ws = useRef(null);
 
-  // 🔁 Fetch student data
   useEffect(() => {
     const fetchStudentData = async () => {
       try {
@@ -31,7 +29,6 @@ export default function TeacherDashboardView() {
     return () => clearInterval(interval);
   }, [sessionCode]);
 
-  // 📥 Fetch notes from slides/{sessionCode}/notes.json
   useEffect(() => {
     fetch(`${BACKEND_BASE_URL}/slides/${sessionCode}/notes.json`)
       .then(res => res.json())
@@ -39,7 +36,6 @@ export default function TeacherDashboardView() {
       .catch(err => console.error("Failed to load notes:", err));
   }, [sessionCode]);
 
-  // 🔁 Listen for synced slide index via WebSocket
   useEffect(() => {
     const wsUrl = BACKEND_BASE_URL.replace(/^http/, "ws");
     ws.current = new WebSocket(wsUrl);
@@ -58,7 +54,6 @@ export default function TeacherDashboardView() {
 
   return (
     <div className="tdb-container">
-      {/* Top content area (dashboard and sidebar) */}
       <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
         <div className="slide-area" style={{ flex: 1 }}>
           <div className="tdb-page-container">

@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import "../views/TeacherView.css";
+import { BACKEND_BASE_URL } from "../config";
 
 export default function NavigationBar({ leftButtons, sessionCode }) {
   const [editorsLocked, setEditorsLocked] = useState(false);
   const [slidesUrl, setSlidesUrl] = useState("");
 
   useEffect(() => {
-    fetch(`http://localhost:4000/slides/${sessionCode}/meta.json`)
+    fetch(`${BACKEND_BASE_URL}/slides/${sessionCode}/meta.json`)
       .then(res => res.json())
       .then(data => setSlidesUrl(data.slidesUrl))
       .catch(err => console.error("Failed to fetch meta.json:", err));
@@ -16,7 +17,8 @@ export default function NavigationBar({ leftButtons, sessionCode }) {
     const newLocked = !editorsLocked;
     setEditorsLocked(newLocked);
 
-    const ws = new WebSocket("ws://localhost:4000");
+    const wsUrl = BACKEND_BASE_URL.replace(/^http/, "ws");
+    const ws = new WebSocket(wsUrl);
     ws.onopen = () => {
       ws.send(JSON.stringify({
         type: "lock-editors",

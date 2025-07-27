@@ -7,8 +7,7 @@ import "xterm/css/xterm.css";
 import "./TeacherInspectCode.css";
 import NavigationBar from "../components/NavigationBar";
 import NotesSidebar from "../components/NotesSidebar";
-
-const BACKEND_BASE_URL = "http://localhost:4000";
+import { BACKEND_BASE_URL } from "../config";
 
 export default function TeacherInspectCode() {
   const { sessionCode, studentId } = useParams();

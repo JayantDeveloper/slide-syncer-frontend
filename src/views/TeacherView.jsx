@@ -4,8 +4,7 @@ import NavigationBar from "../components/NavigationBar";
 import NotesSidebar from "../components/NotesSidebar";
 import "./TeacherView.css";
 import { useParams, useNavigate } from "react-router-dom";
-
-const BACKEND_BASE_URL = "http://localhost:4000";
+import { BACKEND_BASE_URL } from "../config";
 
 export default function TeacherView() {
   const { sessionCode } = useParams();

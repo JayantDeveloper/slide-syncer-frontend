@@ -6,8 +6,8 @@ import TerminalPane from "../components/TerminalPane";
 import "./StudentView.css";
 import { v4 as uuidv4 } from "uuid";
 import { useParams } from "react-router-dom";
+import { BACKEND_BASE_URL } from "../config";
 
-const BACKEND_BASE_URL = "http://localhost:4000";
 const STARTER_CODE = `# Write your code here\nprint("Hello, World!")\n`;
 
 export default function StudentView() {
@@ -22,7 +22,6 @@ export default function StudentView() {
   const [pendingSlideIndex, setPendingSlideIndex] = useState(null);
   const wsRef = useRef(null);
 
-  // Fetch coding slide indices
   useEffect(() => {
     const fetchCodingSlides = async () => {
       try {
@@ -37,9 +36,9 @@ export default function StudentView() {
     fetchCodingSlides();
   }, [sessionCode]);
 
-  // WebSocket for slide sync and editor lock
   useEffect(() => {
-    const ws = new WebSocket("ws://localhost:4000");
+    const wsUrl = BACKEND_BASE_URL.replace(/^http/, "ws");
+    const ws = new WebSocket(wsUrl);
     wsRef.current = ws;
 
     ws.onmessage = (event) => {
@@ -50,14 +49,13 @@ export default function StudentView() {
       }
 
       if (data.type === "sync") {
-        setPendingSlideIndex(data.slide); // only store here
+        setPendingSlideIndex(data.slide);
       }
     };
 
     return () => ws.close();
   }, [sessionCode]);
 
-  // Set slide and editor content once codingSlides + sync message are ready
   useEffect(() => {
     if (pendingSlideIndex === null || codingSlides.length === 0) return;
 
@@ -70,7 +68,6 @@ export default function StudentView() {
     }
   }, [pendingSlideIndex, codingSlides]);
 
-  // Post student code/output every 3s
   useEffect(() => {
     const interval = setInterval(() => {
       fetch(`${BACKEND_BASE_URL}/api/sessions/${sessionCode}/code`, {

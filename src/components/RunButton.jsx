@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useCallback } from "react";
 import { CodeContext, TerminalContext } from "../context";
 import "./RunButton.css";
+import { BACKEND_BASE_URL } from "../config";
 
 const DEFAULT_LANGUAGE = "python";
 
@@ -22,7 +23,7 @@ export default function RunButton({ onOutput }) {
 
   useEffect(() => {
     if (terminal) {
-      terminal.writeln("Terminal ready. Click \"Run\" to execute.");
+      terminal.writeln('Terminal ready. Click "Run" to execute.');
       safeScroll();
     }
   }, [terminal, safeScroll]);
@@ -34,48 +35,47 @@ export default function RunButton({ onOutput }) {
   };
 
   const runCode = async () => {
-	if (!terminal) return;
+    if (!terminal) return;
 
-	if (!code || code.trim() === "") {
-	  terminal.writeln("No code to run.");
-	  safeScroll();
-	  return;
-	}
-
-	terminal.reset(); // Full clear
-	terminal.writeln(">>> Running...");
-	safeScroll();
-
-	try {
-	  const res = await fetch("http://localhost:4000/api/run", {
-		method: "POST",
-		headers: { "Content-Type": "application/json" },
-		body: JSON.stringify({ code, language: DEFAULT_LANGUAGE }),
-	  });
-
-	  if (!res.ok) {
-		throw new Error(`HTTP error! status: ${res.status}`);
-	  }
-
-	  const data = await res.json();
-    const baseOutput = data.output || "No output.";
-    const fullOutput = `${baseOutput.trim()}\n✔ Done`;
-    const lines = fullOutput.split("\n");
-
-    // Update terminal
-    terminal.reset();
-    writeLinesToTerminal([...lines.slice(0, -1), "\x1b[32m✔ Done\x1b[0m"]);
-
-    if (onOutput) {
-      onOutput(fullOutput);
+    if (!code || code.trim() === "") {
+      terminal.writeln("No code to run.");
+      safeScroll();
+      return;
     }
-	} catch (err) {
-	  terminal.writeln("Error: " + err.message);
-	  if (err.name === "TypeError" && err.message.includes("fetch")) {
-		terminal.writeln("Make sure the backend server is running on http://localhost:5001");
-	  }
-	  safeScroll();
-	}
+
+    terminal.reset(); // Full clear
+    terminal.writeln(">>> Running...");
+    safeScroll();
+
+    try {
+      const res = await fetch(`${BACKEND_BASE_URL}/api/run`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code, language: DEFAULT_LANGUAGE }),
+      });
+
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+
+      const data = await res.json();
+      const baseOutput = data.output || "No output.";
+      const fullOutput = `${baseOutput.trim()}\n✔ Done`;
+      const lines = fullOutput.split("\n");
+
+      terminal.reset();
+      writeLinesToTerminal([...lines.slice(0, -1), "\x1b[32m✔ Done\x1b[0m"]);
+
+      if (onOutput) {
+        onOutput(fullOutput);
+      }
+    } catch (err) {
+      terminal.writeln("Error: " + err.message);
+      if (err.name === "TypeError" && err.message.includes("fetch")) {
+        terminal.writeln(`Make sure the backend server is up at ${BACKEND_BASE_URL}`);
+      }
+      safeScroll();
+    }
   };
 
   return (
