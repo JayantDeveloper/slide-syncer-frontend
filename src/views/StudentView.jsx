@@ -106,7 +106,7 @@ export default function StudentView() {
               onCodeChange={setEditorContent}
               readOnly={editorLocked}
             />
-            <RunButton onOutput={setOutput} />
+            <RunButton code={editorContent} onOutput={setOutput} />
           </div>
           <TerminalPane onOutputChange={setOutput} />
         </div>

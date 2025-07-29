@@ -1,12 +1,11 @@
 import React, { useContext, useEffect, useCallback } from "react";
-import { CodeContext, TerminalContext } from "../context";
+import { TerminalContext } from "../context";
 import "./RunButton.css";
 import { BACKEND_BASE_URL } from "../config";
 
 const DEFAULT_LANGUAGE = "python";
 
-export default function RunButton({ onOutput }) {
-  const { code } = useContext(CodeContext);
+export default function RunButton({ code, onOutput }) {
   const { terminal } = useContext(TerminalContext);
 
   const safeScroll = useCallback(() => {
