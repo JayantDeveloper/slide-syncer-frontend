@@ -17,8 +17,8 @@ export default function JoinPage() {
     <div className="join-page-container">
       <div className="join-content">
         <div className="join-header">
-          <div className="tomato-icon">🍅</div>
-          <h1>TomatoCode</h1>
+          <div className="kiwi-icon">🥝</div> {/* updated icon */}
+          <h1>CodeKiwi</h1> {/* updated title */}
           <p>Join your coding session</p>
         </div>
 

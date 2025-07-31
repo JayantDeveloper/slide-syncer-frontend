@@ -39,7 +39,7 @@
   margin-bottom: 32px;
 }
 
-.tomato-icon {
+.kiwi-icon {
   font-size: 48px;
   margin-bottom: 16px;
   display: block;
@@ -163,7 +163,6 @@
   margin: 0;
 }
 
-/* Responsive design */
 @media (max-width: 480px) {
   .enter-name-content {
     padding: 32px 24px;
@@ -174,7 +173,7 @@
     font-size: 28px;
   }
 
-  .tomato-icon {
+  .kiwi-icon {
     font-size: 40px;
   }
 
