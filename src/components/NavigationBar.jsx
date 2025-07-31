@@ -65,13 +65,13 @@ export default function NavigationBar({ leftButtons, sessionCode }) {
           Student View
         </a>
 
-        <div className="student-count">
-          👥 {studentCount} {studentCount === 1 ? "student" : "students"}
-        </div>
-
         <button onClick={toggleLock} className="teacher-button">
           {editorsLocked ? "Unlock Editors" : "Lock Editors"}
         </button>
+
+        <div className="student-count">
+          👥 {studentCount} {studentCount === 1 ? "student" : "students"}
+        </div>
       </div>
 
       <button
