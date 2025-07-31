@@ -1,7 +1,7 @@
 .teacher-container {
     display: flex;
     height: 100vh;
-    background-color: #f8f9fa;
+    background-color: #d5f1d5;
   }
 
   .slide-area {
@@ -46,3 +46,11 @@
     background-color: #c0392b;
   }
 
+  .student-count {
+    font-weight: bold;
+    padding: 6px 12px;
+    background-color: #f1f3f5;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    align-self: center;
+  }
