@@ -1,1 +1,1 @@
-export const BACKEND_BASE_URL = "https://tomatocode.plastuchino.xyz";
+export const BACKEND_BASE_URL = "https://api.codekiwi.app";
