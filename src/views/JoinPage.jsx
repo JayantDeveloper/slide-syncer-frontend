@@ -4,12 +4,35 @@ import "./JoinPage.css";
 
 export default function JoinPage() {
   const [pin, setPin] = useState("");
+  const [error, setError] = useState(""); // 🔴 Error message state
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (pin.trim()) {
-      navigate(`/student/${pin}`);
+    const trimmedPin = pin.trim();
+    if (!trimmedPin) {
+      setError("Please enter a session PIN.");
+      return;
+    }
+
+    setIsLoading(true);
+    setError("");
+
+    try {
+      const res = await fetch(`https://api.codekiwi.app/api/sessions/${trimmedPin}/exists`);
+      const data = await res.json();
+
+      if (res.ok && data.exists) {
+        navigate(`/student/${trimmedPin}`);
+      } else {
+        setError("That PIN doesn't match any active session.");
+      }
+    } catch (err) {
+      console.error("Error checking PIN:", err);
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -17,8 +40,8 @@ export default function JoinPage() {
     <div className="join-page-container">
       <div className="join-content">
         <div className="join-header">
-          <div className="kiwi-icon">🥝</div> {/* updated icon */}
-          <h1>CodeKiwi</h1> {/* updated title */}
+          <div className="kiwi-icon">🥝</div>
+          <h1>CodeKiwi</h1>
           <p>Join your coding session</p>
         </div>
 
@@ -32,11 +55,13 @@ export default function JoinPage() {
               value={pin}
               onChange={(e) => setPin(e.target.value)}
               className="join-input"
+              disabled={isLoading}
             />
+            {error && <div className="join-error">{error}</div>}
           </div>
 
-          <button type="submit" className="join-button" disabled={!pin.trim()}>
-            Join Session
+          <button type="submit" className="join-button" disabled={!pin.trim() || isLoading}>
+            {isLoading ? "Checking..." : "Join Session"}
           </button>
         </form>
 

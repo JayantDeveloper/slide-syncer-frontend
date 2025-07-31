@@ -124,6 +124,12 @@
   margin: 0;
 }
 
+.join-error {
+  color: #c0392b;
+  font-size: 14px;
+  margin-top: 8px;
+}
+
 @media (max-width: 480px) {
   .join-content {
     padding: 32px 24px;
