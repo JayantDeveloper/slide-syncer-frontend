@@ -1,35 +1,141 @@
-.join-page {
+.join-page-container {
   display: flex;
-  height: 100vh;
   justify-content: center;
   align-items: center;
-  background-color: #f0f0f0;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8f9fa 0%, #d8f0d8 100%);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  padding: 20px;
 }
 
-.join-page form {
+.join-content {
   background: white;
-  padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  text-align: center;
-}
-
-.join-page input {
-  padding: 10px;
-  margin-top: 10px;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(107, 143, 43, 0.1);
+  padding: 48px 40px;
   width: 100%;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  max-width: 420px;
+  text-align: center;
+  border: 1px solid rgba(107, 143, 43, 0.1);
 }
 
-.join-page button {
-  margin-top: 1rem;
-  padding: 10px 20px;
+.join-header {
+  margin-bottom: 32px;
+}
+
+.tomato-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  display: block;
+}
+
+.join-header h1 {
+  color: #6b8f2b;
+  font-size: 32px;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+  letter-spacing: -0.5px;
+}
+
+.join-header p {
+  color: #666;
+  font-size: 16px;
+  margin: 0;
+}
+
+.join-form {
+  margin-bottom: 24px;
+}
+
+.input-group {
+  text-align: left;
+  margin-bottom: 24px;
+}
+
+.input-group label {
+  display: block;
+  color: #333;
+  font-weight: 600;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.join-input {
+  width: 100%;
+  padding: 16px;
+  font-size: 16px;
+  border: 2px solid #e1e5e9;
+  border-radius: 12px;
+  outline: none;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+  background-color: #fafbfc;
+}
+
+.join-input:focus {
+  border-color: #6b8f2b;
+  background-color: white;
+  box-shadow: 0 0 0 3px rgba(107, 143, 43, 0.1);
+}
+
+.join-input::placeholder {
+  color: #999;
+}
+
+.join-button {
+  width: 100%;
+  padding: 16px 24px;
+  font-size: 16px;
+  font-weight: 600;
   background-color: #6b8f2b;
   color: white;
-  font-weight: bold;
   border: none;
-  border-radius: 6px;
+  border-radius: 12px;
   cursor: pointer;
+  transition: all 0.2s ease;
+  letter-spacing: 0.3px;
+}
+
+.join-button:hover:not(:disabled) {
+  background-color: #5a7524;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(107, 143, 43, 0.3);
+}
+
+.join-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.join-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.join-footer {
+  border-top: 1px solid #f0f0f0;
+  padding-top: 20px;
+}
+
+.join-footer p {
+  color: #666;
+  font-size: 14px;
+  margin: 0;
+}
+
+/* Responsive design */
+@media (max-width: 480px) {
+  .join-content {
+    padding: 32px 24px;
+    margin: 20px;
+  }
+
+  .join-header h1 {
+    font-size: 28px;
+  }
+
+  .tomato-icon {
+    font-size: 40px;
+  }
 }

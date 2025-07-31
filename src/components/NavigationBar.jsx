@@ -52,15 +52,32 @@ export default function NavigationBar({ leftButtons, sessionCode }) {
       <button
         className="end-session"
         onClick={() => {
-          if (slidesUrl) {
-            window.location.href = slidesUrl;
-          } else {
-            alert("Slides URL not found. Cannot end session.");
-          }
+          const wsUrl = BACKEND_BASE_URL.replace(/^http/, "ws");
+          const ws = new WebSocket(wsUrl);
+
+          ws.onopen = () => {
+            ws.send(JSON.stringify({
+              type: "session-ended",
+              sessionCode,
+            }));
+            ws.close();
+
+        
+            if (slidesUrl) {
+              window.location.href = slidesUrl;
+            } else {
+              alert("Slides URL not found. Cannot end session.");
+            }
+          };
+
+          ws.onerror = (err) => {
+            console.error("WebSocket error while ending session:", err);
+          };
         }}
       >
         End Session
       </button>
+
     </div>
   );
 }

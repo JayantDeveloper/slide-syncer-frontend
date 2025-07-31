@@ -20,6 +20,7 @@ export default function StudentView() {
   const [codingSlides, setCodingSlides] = useState([]);
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [pendingSlideIndex, setPendingSlideIndex] = useState(null);
+  const [sessionEnded, setSessionEnded] = useState(false);
   const wsRef = useRef(null);
 
   useEffect(() => {
@@ -50,6 +51,11 @@ export default function StudentView() {
 
       if (data.type === "sync") {
         setPendingSlideIndex(data.slide);
+      }
+
+      if (data.type === "session-ended" && data.sessionCode === sessionCode) {
+        console.log("🚪 Session ended by teacher");
+        setSessionEnded(true);
       }
     };
 
@@ -89,6 +95,15 @@ export default function StudentView() {
   const isCodeSlide = codingSlidesReady && codingSlides.includes(currentSlideIndex);
 
   console.log(`🧠 Slide ${currentSlideIndex} - ${isCodeSlide ? "CODING" : "NON-CODING"}`);
+
+  if (sessionEnded) {
+    return (
+      <div className="session-ended-screen">
+        <h1>This session has ended.</h1>
+        <p>Thanks for coding with us!</p>
+      </div>
+    );
+  }
 
   return (
     <div className="student-container">

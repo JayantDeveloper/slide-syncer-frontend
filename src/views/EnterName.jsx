@@ -5,6 +5,7 @@ import { BACKEND_BASE_URL } from "../config";
 
 export default function EnterName() {
   const [name, setName] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { sessionCode } = useParams();
 
@@ -12,11 +13,13 @@ export default function EnterName() {
     e.preventDefault();
     if (!name.trim()) return;
 
+    setIsLoading(true);
+
     try {
       const res = await fetch(`${BACKEND_BASE_URL}/api/sessions/${sessionCode}/join`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name }),
+        body: JSON.stringify({ name: name.trim() }),
       });
 
       const data = await res.json();
@@ -31,25 +34,57 @@ export default function EnterName() {
     } catch (err) {
       console.error("Join failed:", err);
       alert("Error connecting to server.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <div className="enter-name-container">
-      <form className="enter-name-form" onSubmit={handleSubmit}>
-        <h2>Enter Your Name</h2>
-        <input
-          className="enter-name-input"
-          type="text"
-          placeholder="Your name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-        <br />
-        <button className="enter-name-button" type="submit">
-          Join Session
-        </button>
-      </form>
+      <div className="enter-name-content">
+        <div className="enter-name-header">
+          <div className="session-badge">
+            Session: {sessionCode}
+          </div>
+          <div className="tomato-icon">🍅</div>
+          <h1>Welcome to TomatoCode!</h1>
+          <p>Let's get you set up for the session</p>
+        </div>
+
+        <form className="enter-name-form" onSubmit={handleSubmit}>
+          <div className="input-group">
+            <label htmlFor="name">Your Name</label>
+            <input
+              id="name"
+              className="enter-name-input"
+              type="text"
+              placeholder="Enter your full name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              disabled={isLoading}
+            />
+          </div>
+
+          <button
+            className="enter-name-button"
+            type="submit"
+            disabled={!name.trim() || isLoading}
+          >
+            {isLoading ? (
+              <>
+                <span className="loading-spinner"></span>
+                Joining...
+              </>
+            ) : (
+              'Join Session'
+            )}
+          </button>
+        </form>
+
+        <div className="enter-name-footer">
+          <p>Ready to start coding? Enter your name above!</p>
+        </div>
+      </div>
     </div>
   );
 }

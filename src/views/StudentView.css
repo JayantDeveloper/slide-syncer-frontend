@@ -79,3 +79,20 @@
 .slide-wrapper.shrink {
   max-width: 80%;
 }
+
+.session-ended-screen {
+  animation: fadeIn 0.4s ease-in;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  font-size: 1.6rem;
+  background-color: #f8f9fa;
+  color: #333;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
