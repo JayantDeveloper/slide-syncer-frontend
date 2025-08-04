@@ -8,6 +8,7 @@ import EnterName from './views/EnterName';
 import JoinPage from './views/JoinPage';
 import TermsOfService from './views/TermsOfService';
 import PrivacyPolicy from './views/PrivacyPolicy';
+import Support from './views/Support';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
         <Route path="/student/:sessionCode/:studentId" element={<StudentView />} />
         <Route path="/terms" element={<TermsOfService />} />
         <Route path="/privacy" element={<PrivacyPolicy />} />
+        <Route path="/support" element={<Support />} />
       </Routes>
     </Router>
   );
