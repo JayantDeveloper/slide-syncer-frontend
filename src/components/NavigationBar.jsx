@@ -76,27 +76,33 @@ export default function NavigationBar({ leftButtons, sessionCode }) {
 
       <button
         className="end-session"
-        onClick={() => {
-          const wsUrl = BACKEND_BASE_URL.replace(/^http/, "ws");
-          const ws = new WebSocket(wsUrl);
+        onClick={async () => {
+          try {
+            // 1) Persist ended state on the server
+            const resp = await fetch(
+              `${BACKEND_BASE_URL}/api/sessions/${sessionCode}/end`,
+              { method: "POST", headers: { "Content-Type": "application/json" } }
+            );
+            if (!resp.ok) throw new Error("Failed to end session");
 
-          ws.onopen = () => {
-            ws.send(JSON.stringify({
-              type: "session-ended",
-              sessionCode,
-            }));
-            ws.close();
+            // 2) Optional: WS broadcast for instant flip (nice to keep)
+            const wsUrl = BACKEND_BASE_URL.replace(/^http/, "ws");
+            const ws = new WebSocket(wsUrl);
+            ws.onopen = () => {
+              ws.send(JSON.stringify({ type: "session-ended", sessionCode }));
+              ws.close();
+            };
 
+            // 3) Redirect teacher to original Slides
             if (slidesUrl) {
               window.location.href = slidesUrl;
             } else {
-              alert("Slides URL not found. Cannot end session.");
+              alert("Session ended. No Slides URL found for redirect.");
             }
-          };
-
-          ws.onerror = (err) => {
-            console.error("WebSocket error while ending session:", err);
-          };
+          } catch (e) {
+            console.error(e);
+            alert("Could not end session. Please try again.");
+          }
         }}
       >
         End Session

@@ -12,32 +12,70 @@ const STARTER_CODE = `# Write your code here\nprint("Hello, World!")\n`;
 
 export default function StudentView() {
   const { sessionCode } = useParams();
+
   const [editorContent, setEditorContent] = useState("");
-  const [studentId] = useState(() => localStorage.getItem("studentId") || uuidv4());
-  const [studentName] = useState(() => localStorage.getItem("studentName") || "Unnamed Student");
+  const [studentId] = useState(() => {
+    const existing = localStorage.getItem("studentId");
+    const id = existing || uuidv4();
+    if (!existing) localStorage.setItem("studentId", id);
+    return id;
+  });
+  const [studentName] = useState(() => {
+    const existing = localStorage.getItem("studentName");
+    const name = existing || "Unnamed Student";
+    if (!existing) localStorage.setItem("studentName", name);
+    return name;
+  });
+
   const [output, setOutput] = useState("");
   const [editorLocked, setEditorLocked] = useState(false);
   const [codingSlides, setCodingSlides] = useState([]);
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [pendingSlideIndex, setPendingSlideIndex] = useState(null);
   const [sessionEnded, setSessionEnded] = useState(false);
+
   const wsRef = useRef(null);
 
+  // On initial load/refresh, verify the session is still active
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const r = await fetch(
+          `${BACKEND_BASE_URL}/api/sessions/${sessionCode}/exists`,
+        );
+        const { exists, active } = await r.json();
+        if (!cancelled && (!exists || !active)) setSessionEnded(true);
+        if (!cancelled && exists && active) setSessionEnded(false);
+      } catch (e) {
+        console.error("exists check failed", e);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [sessionCode]);
+
+  // Load which slides are coding slides
   useEffect(() => {
     const fetchCodingSlides = async () => {
       try {
-        const res = await fetch(`${BACKEND_BASE_URL}/api/sessions/${sessionCode}/coding-slides`);
+        const res = await fetch(
+          `${BACKEND_BASE_URL}/api/sessions/${sessionCode}/coding-slides`,
+        );
         const { codingSlides } = await res.json();
         setCodingSlides(codingSlides);
       } catch (err) {
         console.error("Failed to load coding slide info:", err);
       }
     };
-
     fetchCodingSlides();
   }, [sessionCode]);
 
+  // WebSocket: sync slides, lock editors, and detect session end
   useEffect(() => {
+    if (sessionEnded) return; // don't open WS after end
+
     const wsUrl = BACKEND_BASE_URL.replace(/^http/, "ws");
     const ws = new WebSocket(wsUrl);
     wsRef.current = ws;
@@ -56,13 +94,23 @@ export default function StudentView() {
       if (data.type === "session-ended" && data.sessionCode === sessionCode) {
         console.log("🚪 Session ended by teacher");
         setSessionEnded(true);
+        try {
+          ws.close();
+        } catch {}
       }
     };
 
-    return () => ws.close();
-  }, [sessionCode]);
+    ws.onerror = (e) => console.error("WS error", e);
+    return () => {
+      try {
+        ws.close();
+      } catch {}
+    };
+  }, [sessionCode, sessionEnded]);
 
+  // When a new slide is received, update editor content if it's a coding slide
   useEffect(() => {
+    if (sessionEnded) return;
     if (pendingSlideIndex === null || codingSlides.length === 0) return;
 
     setCurrentSlideIndex(pendingSlideIndex);
@@ -72,9 +120,12 @@ export default function StudentView() {
     } else {
       setEditorContent("");
     }
-  }, [pendingSlideIndex, codingSlides]);
+  }, [pendingSlideIndex, codingSlides, sessionEnded]);
 
+  // Heartbeat: post code/output to teacher dashboard (stop after end)
   useEffect(() => {
+    if (sessionEnded) return; // don't post after end
+
     const interval = setInterval(() => {
       fetch(`${BACKEND_BASE_URL}/api/sessions/${sessionCode}/code`, {
         method: "POST",
@@ -85,16 +136,22 @@ export default function StudentView() {
           code: editorContent || "",
           output: output || "",
         }),
-      }).catch(err => console.error("Failed to post code:", err));
+      }).catch((err) => console.error("Failed to post code:", err));
     }, 3000);
 
     return () => clearInterval(interval);
-  }, [sessionCode, studentId, studentName, editorContent, output]);
+  }, [
+    sessionCode,
+    studentId,
+    studentName,
+    editorContent,
+    output,
+    sessionEnded,
+  ]);
 
   const codingSlidesReady = codingSlides.length > 0;
-  const isCodeSlide = codingSlidesReady && codingSlides.includes(currentSlideIndex);
-
-  console.log(`🧠 Slide ${currentSlideIndex} - ${isCodeSlide ? "CODING" : "NON-CODING"}`);
+  const isCodeSlide =
+    codingSlidesReady && codingSlides.includes(currentSlideIndex);
 
   if (sessionEnded) {
     return (

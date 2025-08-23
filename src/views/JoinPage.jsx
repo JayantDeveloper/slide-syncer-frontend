@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./JoinPage.css";
+import { BACKEND_BASE_URL } from "../config";
 
 export default function JoinPage() {
   const [pin, setPin] = useState("");
-  const [error, setError] = useState(""); // 🔴 Error message state
+  const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -20,17 +21,21 @@ export default function JoinPage() {
     setError("");
 
     try {
-      const res = await fetch(`https://api.codekiwi.app/api/sessions/${trimmedPin}/exists`);
-      const data = await res.json();
+      const res = await fetch(`${BACKEND_BASE_URL}/api/sessions/${trimmedPin}/exists`);
+      const data = await res.json(); // expected: { exists: boolean, active: boolean }
 
-      if (res.ok && data.exists) {
-        navigate(`/student/${trimmedPin}`);
+      if (!res.ok) {
+        setError("Something went wrong. Please try again.");
+      } else if (!data.exists) {
+        setError("That PIN doesn't match any session.");
+      } else if (!data.active) {
+        setError("This session has ended.");
       } else {
-        setError("That PIN doesn't match any active session.");
+        navigate(`/student/${trimmedPin}`);
       }
     } catch (err) {
       console.error("Error checking PIN:", err);
-      setError("Something went wrong. Please try again.");
+      setError("Network error. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -56,6 +61,7 @@ export default function JoinPage() {
               onChange={(e) => setPin(e.target.value)}
               className="join-input"
               disabled={isLoading}
+              autoFocus
             />
             {error && <div className="join-error">{error}</div>}
           </div>
