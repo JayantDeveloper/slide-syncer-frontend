@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "../views/TeacherView.css";
 import { BACKEND_BASE_URL } from "../config";
 
@@ -6,20 +6,66 @@ export default function NavigationBar({ leftButtons, sessionCode }) {
   const [editorsLocked, setEditorsLocked] = useState(false);
   const [slidesUrl, setSlidesUrl] = useState("");
   const [studentCount, setStudentCount] = useState(0);
+  const wsRef = useRef(null);
 
   // Fetch slides URL
   useEffect(() => {
     fetch(`${BACKEND_BASE_URL}/slides/${sessionCode}/meta.json`)
-      .then(res => res.json())
-      .then(data => setSlidesUrl(data.slidesUrl))
-      .catch(err => console.error("Failed to fetch meta.json:", err));
+      .then((res) => res.json())
+      .then((data) => setSlidesUrl(data.slidesUrl))
+      .catch((err) => console.error("Failed to fetch meta.json:", err));
+  }, [sessionCode]);
+
+  // Hydrate the current lock state on mount / when session changes
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch(
+          `${BACKEND_BASE_URL}/api/sessions/${sessionCode}/lock`
+        );
+        const data = await res.json();
+        if (!cancelled) setEditorsLocked(!!data.locked);
+      } catch (e) {
+        console.warn("Failed to fetch lock state:", e);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [sessionCode]);
+
+  // Subscribe to WS broadcasts to keep the label in sync across views/tabs
+  useEffect(() => {
+    const wsUrl = BACKEND_BASE_URL.replace(/^http/, "ws");
+    const ws = new WebSocket(wsUrl);
+    wsRef.current = ws;
+
+    ws.onmessage = (evt) => {
+      try {
+        const msg = JSON.parse(evt.data);
+        if (msg.type === "lock-editors" && msg.sessionCode === sessionCode) {
+          setEditorsLocked(!!msg.locked);
+        }
+      } catch {
+        /* noop */
+      }
+    };
+    ws.onerror = (e) => console.warn("WS error:", e?.message || e);
+    return () => {
+      try {
+        ws.close();
+      } catch {}
+    };
   }, [sessionCode]);
 
   // Poll for student count every 3 seconds
   useEffect(() => {
     const fetchStudentCount = async () => {
       try {
-        const res = await fetch(`${BACKEND_BASE_URL}/api/sessions/${sessionCode}/students`);
+        const res = await fetch(
+          `${BACKEND_BASE_URL}/api/sessions/${sessionCode}/students`
+        );
         const data = await res.json();
         setStudentCount(data.students.length || 0);
       } catch (err) {
@@ -32,24 +78,32 @@ export default function NavigationBar({ leftButtons, sessionCode }) {
     return () => clearInterval(interval);
   }, [sessionCode]);
 
-  const toggleLock = () => {
+  const toggleLock = async () => {
     const newLocked = !editorsLocked;
-    setEditorsLocked(newLocked);
-
-    const wsUrl = BACKEND_BASE_URL.replace(/^http/, "ws");
-    const ws = new WebSocket(wsUrl);
-    ws.onopen = () => {
-      ws.send(JSON.stringify({
-        type: "lock-editors",
-        sessionCode,
-        locked: newLocked
-      }));
-      ws.close();
-    };
-
-    ws.onerror = (err) => {
-      console.error("WebSocket error while locking:", err);
-    };
+    try {
+      const resp = await fetch(
+        `${BACKEND_BASE_URL}/api/sessions/${sessionCode}/lock`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ locked: newLocked }),
+        }
+      );
+      if (!resp.ok) throw new Error("Failed to set lock");
+      // Optimistic—WS broadcast from server will also reconcile all views
+      setEditorsLocked(newLocked);
+    } catch (e) {
+      console.error(e);
+      // Best-effort re-sync
+      try {
+        const res = await fetch(
+          `${BACKEND_BASE_URL}/api/sessions/${sessionCode}/lock`
+        );
+        const { locked } = await res.json();
+        setEditorsLocked(!!locked);
+      } catch {}
+      alert("Could not toggle editor lock. Please try again.");
+    }
   };
 
   return (
