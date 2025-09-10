@@ -1,17 +1,25 @@
-/* studentview.css (corrected) */
+/* studentview.css (final) */
 
+/* Root container spans full viewport and prevents overflow */
 .student-container {
   display: flex;
   height: 100vh;
+  width: 100vw;              /* ensure no subtle overflow pushes content */
   overflow: hidden;
   background-color: #f37a7a;
+}
+
+/* Make both columns include padding in their percent widths */
+.student-left,
+.student-right {
+  box-sizing: border-box;    /* percentages include padding/border */
+  min-width: 0;              /* allow flex children to shrink */
 }
 
 /* true 60/40 split; allow children to shrink and fill */
 .student-left {
   flex: 0 0 60%;
   max-width: 60%;
-  min-width: 0;
   overflow: hidden;
   padding: 12px;
   display: flex;
@@ -19,19 +27,22 @@
   align-items: center;
 }
 
+/* right column */
 .student-right {
-  box-sizing: border-box;
   flex: 0 0 40%;
   max-width: 40%;
-  min-width: 0;
   display: flex;
   flex-direction: column;
   padding: 12px;
   gap: 12px;
+  overflow: hidden;          /* clip any tiny overflows (e.g., Monaco gutters) */
 }
 
+/* editor pane must not overflow horizontally */
 .editor-container {
   flex: 1;
+  min-width: 0;              /* critical: prevents child min-content overflow */
+  width: 100%;
   background-color: #ffffff;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
@@ -42,8 +53,11 @@
   border: 1px solid #dee2e6;
 }
 
+/* terminal pane respects width and stays inside */
 .terminal-pane {
   height: 200px;
+  min-width: 0;              /* prevent horizontal overflow */
+  width: 100%;
   background-color: #1e1e1e;
   color: white;
   border-radius: 8px;
@@ -51,6 +65,7 @@
   border: 1px solid #2c2c2c;
 }
 
+/* run button */
 .run-button {
   margin-top: 8px;
   align-self: flex-end;
@@ -70,11 +85,11 @@
 
 /* Full width mode for student-left when right panel is hidden */
 .student-left.full-width {
-  flex: 1 1 auto; /* take all available space */
+  flex: 1 1 auto;            /* take all available space */
   max-width: 100%;
 }
 
-/* Let the slide fill available space while preserving aspect */
+/* Slide area: fill space and center content */
 .slide-wrapper {
   width: 100%;
   height: 100%;
@@ -83,12 +98,18 @@
   align-items: center;
 }
 
-/* Neutralize the artificial cap that was shrinking slides */
+/* Ensure the Slides root fills the wrapper (helps avoid mysterious margins) */
+.slide-wrapper > * {
+  width: 100%;
+  height: 100%;
+}
+
+/* Neutralize any artificial cap */
 .slide-wrapper.shrink {
   max-width: none;
 }
 
-/* Ensure media inside Slides scales nicely */
+/* Ensure media inside Slides scales nicely (belt-and-suspenders) */
 .slide-wrapper img,
 .slide-wrapper canvas,
 .slide-wrapper video {
@@ -98,6 +119,7 @@
   display: block;
 }
 
+/* Session ended screen */
 .session-ended-screen {
   animation: fadeIn 0.4s ease-in;
   display: flex;
@@ -111,10 +133,6 @@
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
