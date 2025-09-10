@@ -1,4 +1,4 @@
-.teacher-container {
+  .teacher-container {
     display: flex;
     height: 100vh;
     background-color: #d5f1d5;
@@ -9,12 +9,18 @@
     display: flex;
     flex-direction: column;
     padding: 12px;
+    min-height: 0;
   }
 
+  /* Center the slide and avoid hard clipping */
   .slide-box {
     flex: 1;
     border-radius: 8px;
-    overflow: hidden;
+    overflow: visible;      
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 0;
   }
 
   .slide-controls {

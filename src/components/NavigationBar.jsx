@@ -90,7 +90,6 @@ export default function NavigationBar({ leftButtons, sessionCode }) {
         }
       );
       if (!resp.ok) throw new Error("Failed to set lock");
-      // Optimistic—WS broadcast from server will also reconcile all views
       setEditorsLocked(newLocked);
     } catch (e) {
       console.error(e);

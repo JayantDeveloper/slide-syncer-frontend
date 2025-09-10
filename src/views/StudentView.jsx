@@ -36,13 +36,13 @@ export default function StudentView() {
 
   const wsRef = useRef(null);
 
-  // On initial load/refresh, verify the session is still active
+  // Verify the session is still active
   useEffect(() => {
     let cancelled = false;
     (async () => {
       try {
         const r = await fetch(
-          `${BACKEND_BASE_URL}/api/sessions/${sessionCode}/exists`,
+          `${BACKEND_BASE_URL}/api/sessions/${sessionCode}/exists`
         );
         const { exists, active } = await r.json();
         if (!cancelled && (!exists || !active)) setSessionEnded(true);
@@ -61,7 +61,7 @@ export default function StudentView() {
     const fetchCodingSlides = async () => {
       try {
         const res = await fetch(
-          `${BACKEND_BASE_URL}/api/sessions/${sessionCode}/coding-slides`,
+          `${BACKEND_BASE_URL}/api/sessions/${sessionCode}/coding-slides`
         );
         const { codingSlides } = await res.json();
         setCodingSlides(codingSlides);
@@ -70,6 +70,25 @@ export default function StudentView() {
       }
     };
     fetchCodingSlides();
+  }, [sessionCode]);
+
+  // NEW: hydrate editor lock on mount (handles late joiners)
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch(
+          `${BACKEND_BASE_URL}/api/sessions/${sessionCode}/lock`
+        );
+        const { locked } = await res.json();
+        if (!cancelled) setEditorLocked(!!locked);
+      } catch (e) {
+        console.warn("Failed to fetch initial lock state:", e);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, [sessionCode]);
 
   // WebSocket: sync slides, lock editors, and detect session end
@@ -84,7 +103,7 @@ export default function StudentView() {
       const data = JSON.parse(event.data);
 
       if (data.type === "lock-editors" && data.sessionCode === sessionCode) {
-        setEditorLocked(data.locked);
+        setEditorLocked(!!data.locked);
       }
 
       if (data.type === "sync") {
@@ -140,14 +159,7 @@ export default function StudentView() {
     }, 3000);
 
     return () => clearInterval(interval);
-  }, [
-    sessionCode,
-    studentId,
-    studentName,
-    editorContent,
-    output,
-    sessionEnded,
-  ]);
+  }, [sessionCode, studentId, studentName, editorContent, output, sessionEnded]);
 
   const codingSlidesReady = codingSlides.length > 0;
   const isCodeSlide =
