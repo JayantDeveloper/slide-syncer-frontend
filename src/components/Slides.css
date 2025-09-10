@@ -1,24 +1,36 @@
+/* Slides.css — fixed */
+
 .slides-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;          /* let it fill slide-box / slide-wrapper */
+  padding: 0 20px 20px;  /* keep some padding if you like */
+  box-sizing: border-box;
   text-align: center;
-  padding: 20px;
 }
 
 .session-id {
-  margin: 0 0 12px 0;
+  margin: 12px 0;
   font-size: 16px;
   color: #333;
+  flex: 0 0 auto;        /* don’t steal space from the slide frame */
 }
 
-/* A responsive frame that preserves aspect ratio and prevents cropping */
+/* The frame should fill remaining space and width of its parent */
 .slide-frame {
   position: relative;
-  width: min(100%, 1200px);
-  margin: 0 auto 16px;
-  background: #000;            /* letterbox bars if needed */
+  flex: 1 1 auto;        /* grow to fill vertical space */
+  width: 100%;           /* no min(100%, 1200px) cap */
+  max-width: none;
+  margin: 0;             /* no extra margins that reduce available space */
+  background: #000;      /* letterbox bars if needed */
   border: 1px solid #ccc;
   border-radius: 6px;
-  overflow: hidden;            /* keep image within frame */
-  aspect-ratio: 16 / 9;        /* fallback; replaced dynamically when image loads */
+  overflow: hidden;
+
+  /* Optional fallback; will be overridden by inline style when detected */
+  aspect-ratio: 16 / 9;
 }
 
 /* Make the image fill the frame WITHOUT cropping */
@@ -27,17 +39,19 @@
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: contain;         /* critical: shows entire slide, no cut-off */
-  display: block;              /* removes baseline gap from inline images */
+  object-fit: contain;   /* show entire slide, no cut-off */
+  display: block;
   -webkit-user-drag: none;
   user-select: none;
 }
 
 .share-block {
-  margin: 0 0 1rem 0;
+  margin: 12px 0 0 0;
   text-align: left;
-  width: min(100%, 960px);
+  width: 100%;
+  max-width: 960px;
   margin-inline: auto;
+  flex: 0 0 auto;
 }
 
 .share-label {
