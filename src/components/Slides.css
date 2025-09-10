@@ -4,8 +4,9 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  height: 100%;          /* let it fill slide-box / slide-wrapper */
-  padding: 0 20px 20px;  /* keep some padding if you like */
+  height: 100%;
+  /* was: padding: 0 20px 20px; */
+  padding: 0 0 12px;     /* no horizontal padding so it won't bloat the left column */
   box-sizing: border-box;
   text-align: center;
 }
