@@ -1,22 +1,22 @@
-/* studentview.css (final) */
+/* studentview.css (edited) */
 
-/* Root container spans full viewport and prevents overflow */
+/* Root container spans viewport height; use 100% (not 100vw) to avoid scrollbar overflow */
 .student-container {
   display: flex;
   height: 100vh;
-  width: 100vw;              /* ensure no subtle overflow pushes content */
+  width: 100%;
   overflow: hidden;
   background-color: #f37a7a;
 }
 
-/* Make both columns include padding in their percent widths */
+/* Both columns include padding/border in their percent widths and can shrink */
 .student-left,
 .student-right {
-  box-sizing: border-box;    /* percentages include padding/border */
-  min-width: 0;              /* allow flex children to shrink */
+  box-sizing: border-box;
+  min-width: 0;
 }
 
-/* true 60/40 split; allow children to shrink and fill */
+/* true 60/40 split */
 .student-left {
   flex: 0 0 60%;
   max-width: 60%;
@@ -35,13 +35,14 @@
   flex-direction: column;
   padding: 12px;
   gap: 12px;
-  overflow: hidden;          /* clip any tiny overflows (e.g., Monaco gutters) */
+  overflow: hidden; /* clip any tiny overflows (e.g., Monaco gutters) */
 }
 
-/* editor pane must not overflow horizontally */
+/* editor card must not overflow horizontally */
 .editor-container {
+  box-sizing: border-box; /* include padding/border in width */
   flex: 1;
-  min-width: 0;              /* critical: prevents child min-content overflow */
+  min-width: 0;           /* prevent min-content overflow */
   width: 100%;
   background-color: #ffffff;
   border-radius: 8px;
@@ -53,10 +54,19 @@
   border: 1px solid #dee2e6;
 }
 
+/* ensure the inner editor wrapper plays nice */
+.editor-pane {
+  box-sizing: border-box;
+  min-width: 0;
+  width: 100%;
+  height: 100%;
+}
+
 /* terminal pane respects width and stays inside */
 .terminal-pane {
+  box-sizing: border-box; /* include border in width */
   height: 200px;
-  min-width: 0;              /* prevent horizontal overflow */
+  min-width: 0;
   width: 100%;
   background-color: #1e1e1e;
   color: white;
@@ -98,7 +108,7 @@
   align-items: center;
 }
 
-/* Ensure the Slides root fills the wrapper (helps avoid mysterious margins) */
+/* Ensure the Slides root fills the wrapper */
 .slide-wrapper > * {
   width: 100%;
   height: 100%;
@@ -109,7 +119,7 @@
   max-width: none;
 }
 
-/* Ensure media inside Slides scales nicely (belt-and-suspenders) */
+/* Ensure media inside Slides scales nicely */
 .slide-wrapper img,
 .slide-wrapper canvas,
 .slide-wrapper video {
