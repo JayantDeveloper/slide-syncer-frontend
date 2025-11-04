@@ -1,21 +1,30 @@
-# Slide-Syncer Frontend  
-Frontend for the Slide-Syncer / CodeKiwi student view.
+# CodeKiwi Frontend (Slide-Syncer)
 
-## Overview  
-This is the React + TypeScript frontend of the Slide-Syncer system, used in the CodeKiwi platform.  
-- Student view: left side shows synced slides, right side shows the Monaco code editor + terminal.  
-- Teacher view (via separate repo) controls slide navigation, student views, live code preview.  
-- Built with React and deployed (e.g., on Vercel).  
-- Communicates with backend via WebSocket for slide sync, and REST APIs for session & upload.  
-- Accepts slides (PDF → image) from backend, displays and syncs them across students.
+> The interactive classroom frontend for [CodeKiwi](https://codekiwi.tech) — a “Peardeck for coding” that syncs slides and live code between teachers and students.
 
-## Getting Started  
-### Prerequisites  
-- Node.js v16+ (or latest LTS)  
-- npm, yarn, or pnpm (we use pnpm for production builds)  
-- `bun` can be used in development if configured (per monorepo)  
+## Overview
+This is the React + TypeScript frontend powering CodeKiwi’s live classroom experience.  
+It provides:
+- **Student View** — synced slides on the left, Monaco code editor + terminal on the right.  
+- **Teacher View** — slide navigation controls, live student code previews, and session management.  
+- Real-time updates via WebSocket connection to the backend.  
+- Responsive UI designed for teaching coding lessons in real time.
 
-### Installation  
+Part of the CodeKiwi ecosystem:
+- 🌐 [codekiwi.tech](https://codekiwi.tech)
+- 🖥 [Backend (API + WebSocket)](https://github.com/JayantDeveloper/slide-syncer-backend)
+- 💼 [Commercial Site / Landing Page](https://github.com/JayantDeveloper/codekiwi-site)
+
+---
+
+## Getting Started
+
+### Prerequisites
+- Node.js ≥ 16  
+- pnpm, yarn, or npm  
+- Backend running locally or on Render/EC2
+
+### Installation
 ```bash
 git clone https://github.com/JayantDeveloper/slide-syncer-frontend.git
 cd slide-syncer-frontend
