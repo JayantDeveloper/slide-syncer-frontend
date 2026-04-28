@@ -38,7 +38,10 @@ export default function TeacherView() {
 
     const wsUrl = BACKEND_BASE_URL.replace(/^http/, "ws");
     ws.current = new WebSocket(wsUrl);
-    ws.current.onopen = () => console.log("WebSocket connected");
+    ws.current.onopen = () => {
+      console.log("WebSocket connected");
+      ws.current.send(JSON.stringify({ type: "join", sessionCode }));
+    };
     ws.current.onmessage = (event) => {
       const data = JSON.parse(event.data);
       if (data.type === "sync") setCurrentIndex(data.slide);
@@ -54,7 +57,7 @@ export default function TeacherView() {
     if (newIndex >= 0 && newIndex < slides.length) {
       setCurrentIndex(newIndex);
       if (ws.current?.readyState === WebSocket.OPEN) {
-        ws.current.send(JSON.stringify({ type: "change", slide: newIndex }));
+        ws.current.send(JSON.stringify({ type: "change", slide: newIndex, sessionCode }));
       }
     }
   };

@@ -82,6 +82,8 @@ export default function StudentView() {
     const ws = new WebSocket(wsUrl);
     wsRef.current = ws;
 
+    ws.onopen = () => ws.send(JSON.stringify({ type: "join", sessionCode }));
+
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
       if (data.type === "lock-editors" && data.sessionCode === sessionCode) {

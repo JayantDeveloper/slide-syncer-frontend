@@ -42,6 +42,7 @@ export default function TeacherDashboardView() {
 
     const wsUrl = BACKEND_BASE_URL.replace(/^http/, "ws");
     ws.current = new WebSocket(wsUrl);
+    ws.current.onopen = () => ws.current.send(JSON.stringify({ type: "join", sessionCode }));
     ws.current.onmessage = (event) => {
       const data = JSON.parse(event.data);
       if (data.type === "sync") setCurrentIndex(data.slide);
