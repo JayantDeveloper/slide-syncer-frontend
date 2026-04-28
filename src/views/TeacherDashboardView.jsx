@@ -1,9 +1,11 @@
-import React, { useEffect, useState, useRef } from 'react';
-import './TeacherDashboardView.css';
+import React, { useEffect, useState } from "react";
+import "./TeacherDashboardView.css";
 import NavigationBar from "../components/NavigationBar";
-import NotesSidebar from '../components/NotesSidebar';
-import { useParams, useNavigate } from 'react-router-dom';
+import NotesSidebar from "../components/NotesSidebar";
+import { useParams, useNavigate } from "react-router-dom";
 import { BACKEND_BASE_URL } from "../config";
+import { useSessionWebSocket } from "../hooks/useSessionWebSocket";
+import { useLockEditor } from "../hooks/useLockEditor";
 
 export default function TeacherDashboardView() {
   const { sessionCode } = useParams();
@@ -11,72 +13,39 @@ export default function TeacherDashboardView() {
   const [students, setStudents] = useState([]);
   const [notes, setNotes] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [editorsLocked, setEditorsLocked] = useState(false);
-  const ws = useRef(null);
+
+  const { editorsLocked, setEditorsLocked, toggleLock } = useLockEditor(sessionCode);
+
+  useSessionWebSocket(sessionCode, (data) => {
+    if (data.type === "sync") setCurrentIndex(data.slide);
+    if (data.type === "lock-editors" && data.sessionCode === sessionCode) {
+      setEditorsLocked(!!data.locked);
+    }
+  });
 
   useEffect(() => {
-    const fetchStudentData = async () => {
+    if (!sessionCode) return;
+    fetch(`${BACKEND_BASE_URL}/slides/${sessionCode}/notes.json`)
+      .then((res) => res.json())
+      .then(setNotes)
+      .catch((err) => console.error("Failed to load notes:", err));
+  }, [sessionCode]);
+
+  useEffect(() => {
+    if (!sessionCode) return;
+    const fetchStudents = async () => {
       try {
         const res = await fetch(`${BACKEND_BASE_URL}/api/sessions/${sessionCode}/students`);
         const data = await res.json();
         setStudents(data.students || []);
       } catch (err) {
-        console.error('Error fetching student data:', err);
+        console.error("Error fetching student data:", err);
       }
     };
-    fetchStudentData();
-    const interval = setInterval(fetchStudentData, 3000);
+    fetchStudents();
+    const interval = setInterval(fetchStudents, 3000);
     return () => clearInterval(interval);
   }, [sessionCode]);
-
-  useEffect(() => {
-    fetch(`${BACKEND_BASE_URL}/slides/${sessionCode}/notes.json`)
-      .then((res) => res.json())
-      .then(setNotes)
-      .catch((err) => console.error("Failed to load notes:", err));
-
-    fetch(`${BACKEND_BASE_URL}/api/sessions/${sessionCode}/lock`)
-      .then((res) => res.json())
-      .then((data) => setEditorsLocked(!!data.locked))
-      .catch(() => {});
-
-    const wsUrl = BACKEND_BASE_URL.replace(/^http/, "ws");
-    ws.current = new WebSocket(wsUrl);
-    ws.current.onopen = () => ws.current.send(JSON.stringify({ type: "join", sessionCode }));
-    ws.current.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      if (data.type === "sync") setCurrentIndex(data.slide);
-      if (data.type === "lock-editors" && data.sessionCode === sessionCode) {
-        setEditorsLocked(!!data.locked);
-      }
-    };
-
-    return () => { if (ws.current) ws.current.close(); };
-  }, [sessionCode]);
-
-  const toggleLock = async () => {
-    const newLocked = !editorsLocked;
-    try {
-      const resp = await fetch(
-        `${BACKEND_BASE_URL}/api/sessions/${sessionCode}/lock`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ locked: newLocked }),
-        }
-      );
-      if (!resp.ok) throw new Error("Failed to set lock");
-      setEditorsLocked(newLocked);
-    } catch (e) {
-      console.error(e);
-      try {
-        const res = await fetch(`${BACKEND_BASE_URL}/api/sessions/${sessionCode}/lock`);
-        const { locked } = await res.json();
-        setEditorsLocked(!!locked);
-      } catch {}
-      alert("Could not toggle editor lock. Please try again.");
-    }
-  };
 
   return (
     <div className="tdb-container">

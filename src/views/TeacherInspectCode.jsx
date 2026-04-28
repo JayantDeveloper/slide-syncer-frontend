@@ -8,6 +8,8 @@ import "./TeacherInspectCode.css";
 import NavigationBar from "../components/NavigationBar";
 import NotesSidebar from "../components/NotesSidebar";
 import { BACKEND_BASE_URL } from "../config";
+import { useSessionWebSocket } from "../hooks/useSessionWebSocket";
+import { useLockEditor } from "../hooks/useLockEditor";
 
 export default function TeacherInspectCode() {
   const { sessionCode, studentId } = useParams();
@@ -16,41 +18,29 @@ export default function TeacherInspectCode() {
   const [studentName, setStudentName] = useState("");
   const [notes, setNotes] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [editorsLocked, setEditorsLocked] = useState(false);
   const terminalRef = useRef(null);
   const termInstance = useRef(null);
   const lastOutputRef = useRef("");
-  const ws = useRef(null);
+
+  const { editorsLocked, setEditorsLocked, toggleLock } = useLockEditor(sessionCode);
+
+  useSessionWebSocket(sessionCode, (data) => {
+    if (data.type === "sync") setCurrentIndex(data.slide);
+    if (data.type === "lock-editors" && data.sessionCode === sessionCode) {
+      setEditorsLocked(!!data.locked);
+    }
+  });
 
   useEffect(() => {
+    if (!sessionCode) return;
     fetch(`${BACKEND_BASE_URL}/slides/${sessionCode}/notes.json`)
       .then((res) => res.json())
       .then(setNotes)
       .catch((err) => console.error("Failed to load notes:", err));
-
-    fetch(`${BACKEND_BASE_URL}/api/sessions/${sessionCode}/lock`)
-      .then((res) => res.json())
-      .then((data) => setEditorsLocked(!!data.locked))
-      .catch(() => {});
-
-    const wsUrl = BACKEND_BASE_URL.replace(/^http/, "ws");
-    ws.current = new WebSocket(wsUrl);
-    ws.current.onopen = () => ws.current.send(JSON.stringify({ type: "join", sessionCode }));
-    ws.current.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      if (data.type === "sync") setCurrentIndex(data.slide);
-      if (data.type === "lock-editors" && data.sessionCode === sessionCode) {
-        setEditorsLocked(!!data.locked);
-      }
-    };
-
-    return () => { if (ws.current) ws.current.close(); };
   }, [sessionCode]);
 
-  // Initialize terminal once on mount
   useEffect(() => {
     if (!terminalRef.current || termInstance.current) return;
-
     const term = new Terminal({
       disableStdin: true,
       fontFamily: "'Fira Code', 'Monaco', 'Consolas', monospace",
@@ -64,14 +54,16 @@ export default function TeacherInspectCode() {
     term.open(terminalRef.current);
     fitAddon.fit();
     termInstance.current = term;
-
     return () => { term.dispose(); termInstance.current = null; };
   }, []);
 
   useEffect(() => {
+    if (!sessionCode || !studentId) return;
     const fetchData = async () => {
       try {
-        const res = await fetch(`${BACKEND_BASE_URL}/api/sessions/${sessionCode}/students/${studentId}`);
+        const res = await fetch(
+          `${BACKEND_BASE_URL}/api/sessions/${sessionCode}/students/${studentId}`
+        );
         const data = await res.json();
         setCode(data.code || "");
         setStudentName(data.name || "Unknown");
@@ -93,35 +85,10 @@ export default function TeacherInspectCode() {
         console.error("Failed to fetch student data:", err);
       }
     };
-
     fetchData();
     const interval = setInterval(fetchData, 3000);
     return () => clearInterval(interval);
   }, [sessionCode, studentId]);
-
-  const toggleLock = async () => {
-    const newLocked = !editorsLocked;
-    try {
-      const resp = await fetch(
-        `${BACKEND_BASE_URL}/api/sessions/${sessionCode}/lock`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ locked: newLocked }),
-        }
-      );
-      if (!resp.ok) throw new Error("Failed to set lock");
-      setEditorsLocked(newLocked);
-    } catch (e) {
-      console.error(e);
-      try {
-        const res = await fetch(`${BACKEND_BASE_URL}/api/sessions/${sessionCode}/lock`);
-        const { locked } = await res.json();
-        setEditorsLocked(!!locked);
-      } catch {}
-      alert("Could not toggle editor lock. Please try again.");
-    }
-  };
 
   return (
     <div className="teacher-container">

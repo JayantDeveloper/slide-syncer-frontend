@@ -5,6 +5,8 @@ import NotesSidebar from "../components/NotesSidebar";
 import "./TeacherView.css";
 import { useParams, useNavigate } from "react-router-dom";
 import { BACKEND_BASE_URL } from "../config";
+import { useSessionWebSocket } from "../hooks/useSessionWebSocket";
+import { useLockEditor } from "../hooks/useLockEditor";
 
 export default function TeacherView() {
   const { sessionCode } = useParams();
@@ -15,8 +17,14 @@ export default function TeacherView() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [notes, setNotes] = useState([]);
-  const [editorsLocked, setEditorsLocked] = useState(false);
-  const ws = useRef(null);
+
+  const { editorsLocked, setEditorsLocked, toggleLock } = useLockEditor(sessionCode);
+  const wsRef = useSessionWebSocket(sessionCode, (data) => {
+    if (data.type === "sync") setCurrentIndex(data.slide);
+    if (data.type === "lock-editors" && data.sessionCode === sessionCode) {
+      setEditorsLocked(!!data.locked);
+    }
+  });
 
   useEffect(() => {
     if (!sessionCode) return;
@@ -30,59 +38,14 @@ export default function TeacherView() {
       .then((res) => res.json())
       .then(setNotes)
       .catch((err) => console.warn("No notes found:", err));
-
-    fetch(`${BACKEND_BASE_URL}/api/sessions/${sessionCode}/lock`)
-      .then((res) => res.json())
-      .then((data) => setEditorsLocked(!!data.locked))
-      .catch(() => {});
-
-    const wsUrl = BACKEND_BASE_URL.replace(/^http/, "ws");
-    ws.current = new WebSocket(wsUrl);
-    ws.current.onopen = () => {
-      console.log("WebSocket connected");
-      ws.current.send(JSON.stringify({ type: "join", sessionCode }));
-    };
-    ws.current.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      if (data.type === "sync") setCurrentIndex(data.slide);
-      if (data.type === "lock-editors" && data.sessionCode === sessionCode) {
-        setEditorsLocked(!!data.locked);
-      }
-    };
-
-    return () => { if (ws.current) ws.current.close(); };
   }, [sessionCode]);
 
   const changeSlide = (newIndex) => {
-    if (newIndex >= 0 && newIndex < slides.length) {
-      setCurrentIndex(newIndex);
-      if (ws.current?.readyState === WebSocket.OPEN) {
-        ws.current.send(JSON.stringify({ type: "change", slide: newIndex, sessionCode }));
-      }
-    }
-  };
-
-  const toggleLock = async () => {
-    const newLocked = !editorsLocked;
-    try {
-      const resp = await fetch(
-        `${BACKEND_BASE_URL}/api/sessions/${sessionCode}/lock`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ locked: newLocked }),
-        }
-      );
-      if (!resp.ok) throw new Error("Failed to set lock");
-      setEditorsLocked(newLocked);
-    } catch (e) {
-      console.error(e);
-      try {
-        const res = await fetch(`${BACKEND_BASE_URL}/api/sessions/${sessionCode}/lock`);
-        const { locked } = await res.json();
-        setEditorsLocked(!!locked);
-      } catch {}
-      alert("Could not toggle editor lock. Please try again.");
+    if (newIndex < 0 || newIndex >= slides.length) return;
+    setCurrentIndex(newIndex);
+    const ws = wsRef.current;
+    if (ws?.readyState === WebSocket.OPEN) {
+      ws.send(JSON.stringify({ type: "change", slide: newIndex, sessionCode }));
     }
   };
 
