@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Slides from "../components/Slides";
 import NavigationBar from "../components/NavigationBar";
 import NotesSidebar from "../components/NotesSidebar";
