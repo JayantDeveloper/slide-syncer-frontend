@@ -11,6 +11,7 @@ export default function TeacherDashboardView() {
   const [students, setStudents] = useState([]);
   const [notes, setNotes] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [editorsLocked, setEditorsLocked] = useState(false);
   const ws = useRef(null);
 
   useEffect(() => {
@@ -23,7 +24,6 @@ export default function TeacherDashboardView() {
         console.error('Error fetching student data:', err);
       }
     };
-
     fetchStudentData();
     const interval = setInterval(fetchStudentData, 3000);
     return () => clearInterval(interval);
@@ -31,26 +31,51 @@ export default function TeacherDashboardView() {
 
   useEffect(() => {
     fetch(`${BACKEND_BASE_URL}/slides/${sessionCode}/notes.json`)
-      .then(res => res.json())
+      .then((res) => res.json())
       .then(setNotes)
-      .catch(err => console.error("Failed to load notes:", err));
-  }, [sessionCode]);
+      .catch((err) => console.error("Failed to load notes:", err));
 
-  useEffect(() => {
+    fetch(`${BACKEND_BASE_URL}/api/sessions/${sessionCode}/lock`)
+      .then((res) => res.json())
+      .then((data) => setEditorsLocked(!!data.locked))
+      .catch(() => {});
+
     const wsUrl = BACKEND_BASE_URL.replace(/^http/, "ws");
     ws.current = new WebSocket(wsUrl);
-
     ws.current.onmessage = (event) => {
       const data = JSON.parse(event.data);
-      if (data.type === "sync") {
-        setCurrentIndex(data.slide);
+      if (data.type === "sync") setCurrentIndex(data.slide);
+      if (data.type === "lock-editors" && data.sessionCode === sessionCode) {
+        setEditorsLocked(!!data.locked);
       }
     };
 
-    return () => {
-      if (ws.current) ws.current.close();
-    };
+    return () => { if (ws.current) ws.current.close(); };
   }, [sessionCode]);
+
+  const toggleLock = async () => {
+    const newLocked = !editorsLocked;
+    try {
+      const resp = await fetch(
+        `${BACKEND_BASE_URL}/api/sessions/${sessionCode}/lock`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ locked: newLocked }),
+        }
+      );
+      if (!resp.ok) throw new Error("Failed to set lock");
+      setEditorsLocked(newLocked);
+    } catch (e) {
+      console.error(e);
+      try {
+        const res = await fetch(`${BACKEND_BASE_URL}/api/sessions/${sessionCode}/lock`);
+        const { locked } = await res.json();
+        setEditorsLocked(!!locked);
+      } catch {}
+      alert("Could not toggle editor lock. Please try again.");
+    }
+  };
 
   return (
     <div className="tdb-container">
@@ -66,8 +91,8 @@ export default function TeacherDashboardView() {
                   <div className="tdb-th">View</div>
                 </div>
                 <div className="tdb-table-body">
-                  {students.map((student, index) => (
-                    <div className="tdb-table-row" key={index}>
+                  {students.map((student) => (
+                    <div className="tdb-table-row" key={student.id}>
                       <div className="tdb-td student-name-cell">{student.name}</div>
                       <div className="tdb-td code-preview-cell">
                         <pre className="code-snippet">
@@ -89,12 +114,12 @@ export default function TeacherDashboardView() {
             </div>
           </div>
         </div>
-
         <NotesSidebar currentIndex={currentIndex} notes={notes} />
       </div>
-
       <NavigationBar
         sessionCode={sessionCode}
+        editorsLocked={editorsLocked}
+        onToggleLock={toggleLock}
         leftButtons={[
           <button
             key="presentation"
@@ -102,7 +127,7 @@ export default function TeacherDashboardView() {
             className="teacher-button"
           >
             Presentation View
-          </button>
+          </button>,
         ]}
       />
     </div>

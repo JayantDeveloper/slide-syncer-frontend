@@ -15,47 +15,39 @@ export default function TeacherView() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [notes, setNotes] = useState([]);
+  const [editorsLocked, setEditorsLocked] = useState(false);
   const ws = useRef(null);
 
   useEffect(() => {
     if (!sessionCode) return;
 
     fetch(`${BACKEND_BASE_URL}/slides/${sessionCode}/index.json`)
-      .then(res => res.json())
-      .then(data => {
-        setSlides(data.slides || []);
-        setLoading(false);
-      })
-      .catch(err => {
-        setError("Failed to load slides");
-        setLoading(false);
-      });
+      .then((res) => res.json())
+      .then((data) => { setSlides(data.slides || []); setLoading(false); })
+      .catch(() => { setError("Failed to load slides"); setLoading(false); });
 
-    // 🔹 Fetch notes.json too
     fetch(`${BACKEND_BASE_URL}/slides/${sessionCode}/notes.json`)
-      .then(res => res.json())
+      .then((res) => res.json())
       .then(setNotes)
-      .catch(err => {
-        console.warn("No notes found or failed to load notes:", err);
-      });
+      .catch((err) => console.warn("No notes found:", err));
+
+    fetch(`${BACKEND_BASE_URL}/api/sessions/${sessionCode}/lock`)
+      .then((res) => res.json())
+      .then((data) => setEditorsLocked(!!data.locked))
+      .catch(() => {});
 
     const wsUrl = BACKEND_BASE_URL.replace(/^http/, "ws");
     ws.current = new WebSocket(wsUrl);
-
-    ws.current.onopen = () => {
-      console.log("WebSocket connected");
-    };
-
+    ws.current.onopen = () => console.log("WebSocket connected");
     ws.current.onmessage = (event) => {
       const data = JSON.parse(event.data);
-      if (data.type === "sync") {
-        setCurrentIndex(data.slide);
+      if (data.type === "sync") setCurrentIndex(data.slide);
+      if (data.type === "lock-editors" && data.sessionCode === sessionCode) {
+        setEditorsLocked(!!data.locked);
       }
     };
 
-    return () => {
-      if (ws.current) ws.current.close();
-    };
+    return () => { if (ws.current) ws.current.close(); };
   }, [sessionCode]);
 
   const changeSlide = (newIndex) => {
@@ -64,6 +56,30 @@ export default function TeacherView() {
       if (ws.current?.readyState === WebSocket.OPEN) {
         ws.current.send(JSON.stringify({ type: "change", slide: newIndex }));
       }
+    }
+  };
+
+  const toggleLock = async () => {
+    const newLocked = !editorsLocked;
+    try {
+      const resp = await fetch(
+        `${BACKEND_BASE_URL}/api/sessions/${sessionCode}/lock`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ locked: newLocked }),
+        }
+      );
+      if (!resp.ok) throw new Error("Failed to set lock");
+      setEditorsLocked(newLocked);
+    } catch (e) {
+      console.error(e);
+      try {
+        const res = await fetch(`${BACKEND_BASE_URL}/api/sessions/${sessionCode}/lock`);
+        const { locked } = await res.json();
+        setEditorsLocked(!!locked);
+      } catch {}
+      alert("Could not toggle editor lock. Please try again.");
     }
   };
 
@@ -76,13 +92,15 @@ export default function TeacherView() {
         <div className="slide-box">
           <Slides
             sessionCode={sessionCode}
-            currentSlide={slides[currentIndex]}
+            slides={slides}
             currentIndex={currentIndex}
+            isTeacher
           />
         </div>
-
         <NavigationBar
           sessionCode={sessionCode}
+          editorsLocked={editorsLocked}
+          onToggleLock={toggleLock}
           leftButtons={[
             <button
               key="prev"
@@ -106,7 +124,7 @@ export default function TeacherView() {
               className="teacher-button"
             >
               Open Dashboard
-            </button>
+            </button>,
           ]}
         />
       </div>

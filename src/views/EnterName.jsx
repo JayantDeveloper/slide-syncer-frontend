@@ -6,6 +6,7 @@ import { BACKEND_BASE_URL } from "../config";
 export default function EnterName() {
   const [name, setName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
   const { sessionCode } = useParams();
 
@@ -15,6 +16,7 @@ export default function EnterName() {
 
     setIsLoading(true);
 
+    setError("");
     try {
       const res = await fetch(`${BACKEND_BASE_URL}/api/sessions/${sessionCode}/join`, {
         method: "POST",
@@ -29,11 +31,11 @@ export default function EnterName() {
         localStorage.setItem("studentName", name.trim());
         navigate(`/student/${sessionCode}/${studentId}`);
       } else {
-        alert(data.error || "Failed to join session.");
+        setError(data.error || "Failed to join session.");
       }
     } catch (err) {
       console.error("Join failed:", err);
-      alert("Error connecting to server.");
+      setError("Error connecting to server.");
     } finally {
       setIsLoading(false);
     }
@@ -63,6 +65,7 @@ export default function EnterName() {
               onChange={(e) => setName(e.target.value)}
               disabled={isLoading}
             />
+            {error && <div style={{ color: "#c0392b", fontSize: "13px", marginTop: "6px" }}>{error}</div>}
           </div>
 
           <button

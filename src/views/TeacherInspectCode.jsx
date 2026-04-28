@@ -14,40 +14,59 @@ export default function TeacherInspectCode() {
   const navigate = useNavigate();
   const [code, setCode] = useState("");
   const [studentName, setStudentName] = useState("");
-  const terminalRef = useRef(null);
-  const termInstance = useRef(null);
-
-  // 🔁 New state for notes and current slide index
   const [notes, setNotes] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [editorsLocked, setEditorsLocked] = useState(false);
+  const terminalRef = useRef(null);
+  const termInstance = useRef(null);
+  const lastOutputRef = useRef("");
   const ws = useRef(null);
 
-  // ⬇️ Fetch speaker notes
   useEffect(() => {
     fetch(`${BACKEND_BASE_URL}/slides/${sessionCode}/notes.json`)
-      .then(res => res.json())
+      .then((res) => res.json())
       .then(setNotes)
-      .catch(err => console.error("Failed to load notes:", err));
-  }, [sessionCode]);
+      .catch((err) => console.error("Failed to load notes:", err));
 
-  // ⬇️ Sync current slide via WebSocket
-  useEffect(() => {
+    fetch(`${BACKEND_BASE_URL}/api/sessions/${sessionCode}/lock`)
+      .then((res) => res.json())
+      .then((data) => setEditorsLocked(!!data.locked))
+      .catch(() => {});
+
     const wsUrl = BACKEND_BASE_URL.replace(/^http/, "ws");
     ws.current = new WebSocket(wsUrl);
-
     ws.current.onmessage = (event) => {
       const data = JSON.parse(event.data);
-      if (data.type === "sync") {
-        setCurrentIndex(data.slide);
+      if (data.type === "sync") setCurrentIndex(data.slide);
+      if (data.type === "lock-editors" && data.sessionCode === sessionCode) {
+        setEditorsLocked(!!data.locked);
       }
     };
 
-    return () => {
-      if (ws.current) ws.current.close();
-    };
+    return () => { if (ws.current) ws.current.close(); };
   }, [sessionCode]);
 
-  // ⬇️ Fetch student data (code and terminal output)
+  // Initialize terminal once on mount
+  useEffect(() => {
+    if (!terminalRef.current || termInstance.current) return;
+
+    const term = new Terminal({
+      disableStdin: true,
+      fontFamily: "'Fira Code', 'Monaco', 'Consolas', monospace",
+      fontSize: 14,
+      lineHeight: 1.6,
+      convertEol: true,
+      theme: { background: "#1e1e1e", foreground: "#cccccc" },
+    });
+    const fitAddon = new FitAddon();
+    term.loadAddon(fitAddon);
+    term.open(terminalRef.current);
+    fitAddon.fit();
+    termInstance.current = term;
+
+    return () => { term.dispose(); termInstance.current = null; };
+  }, []);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -56,38 +75,14 @@ export default function TeacherInspectCode() {
         setCode(data.code || "");
         setStudentName(data.name || "Unknown");
 
-        if (terminalRef.current) {
-          const term = termInstance.current;
-
-          if (!term) {
-            const newTerm = new Terminal({
-              disableStdin: true,
-              fontFamily: "'Fira Code', 'Monaco', 'Consolas', monospace",
-              fontSize: 14,
-              lineHeight: 1.6,
-              convertEol: true,
-              theme: {
-                background: "#1e1e1e",
-                foreground: "#cccccc",
-                green: "#00ff00",
-              },
-            });
-            const fitAddon = new FitAddon();
-            newTerm.loadAddon(fitAddon);
-            newTerm.open(terminalRef.current);
-            fitAddon.fit();
-            termInstance.current = newTerm;
-          } else {
-            term.reset();
-          }
-
-          const outputLines = (data.output || "No terminal output yet.").split("\n");
-          outputLines.forEach((line, index) => {
-            const isLastLine = index === outputLines.length - 1;
-            const isDoneLine = line.trim() === "✔ Done";
-
-            if (isLastLine && isDoneLine) {
-              termInstance.current.write("\x1b[32m✔ Done\x1b[0m\r\n"); // green
+        const newOutput = data.output || "No terminal output yet.";
+        if (termInstance.current && newOutput !== lastOutputRef.current) {
+          lastOutputRef.current = newOutput;
+          termInstance.current.reset();
+          newOutput.split("\n").forEach((line, i, arr) => {
+            const isLast = i === arr.length - 1;
+            if (isLast && line.trim() === "✔ Done") {
+              termInstance.current.write("\x1b[32m✔ Done\x1b[0m\r\n");
             } else {
               termInstance.current.write(line + "\r\n");
             }
@@ -102,6 +97,30 @@ export default function TeacherInspectCode() {
     const interval = setInterval(fetchData, 3000);
     return () => clearInterval(interval);
   }, [sessionCode, studentId]);
+
+  const toggleLock = async () => {
+    const newLocked = !editorsLocked;
+    try {
+      const resp = await fetch(
+        `${BACKEND_BASE_URL}/api/sessions/${sessionCode}/lock`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ locked: newLocked }),
+        }
+      );
+      if (!resp.ok) throw new Error("Failed to set lock");
+      setEditorsLocked(newLocked);
+    } catch (e) {
+      console.error(e);
+      try {
+        const res = await fetch(`${BACKEND_BASE_URL}/api/sessions/${sessionCode}/lock`);
+        const { locked } = await res.json();
+        setEditorsLocked(!!locked);
+      } catch {}
+      alert("Could not toggle editor lock. Please try again.");
+    }
+  };
 
   return (
     <div className="teacher-container">
@@ -127,9 +146,10 @@ export default function TeacherInspectCode() {
           </div>
           <div className="teacher-terminal-pane" ref={terminalRef} />
         </div>
-
         <NavigationBar
           sessionCode={sessionCode}
+          editorsLocked={editorsLocked}
+          onToggleLock={toggleLock}
           leftButtons={[
             <button
               key="presentation"
@@ -144,7 +164,7 @@ export default function TeacherInspectCode() {
               className="teacher-button"
             >
               Dashboard View
-            </button>
+            </button>,
           ]}
         />
       </div>
