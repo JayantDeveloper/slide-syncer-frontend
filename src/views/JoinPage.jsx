@@ -45,7 +45,7 @@ export default function JoinPage() {
     <div className="join-page-container">
       <div className="join-content">
         <div className="join-header">
-          <div className="kiwi-icon">🥝</div>
+          <img src="/codekiwilogo.png" className="kiwi-icon" alt="CodeKiwi" />
           <h1>CodeKiwi</h1>
           <p>Join your coding session</p>
         </div>

@@ -40,9 +40,11 @@
 }
 
 .kiwi-icon {
-  font-size: 48px;
-  margin-bottom: 16px;
+  width: 96px;
+  height: 96px;
+  margin: 0 auto 16px;
   display: block;
+  object-fit: contain;
 }
 
 .enter-name-header h1 {
@@ -174,7 +176,8 @@
   }
 
   .kiwi-icon {
-    font-size: 40px;
+    width: 72px;
+    height: 72px;
   }
 
   .session-badge {

@@ -48,7 +48,7 @@ export default function EnterName() {
           <div className="session-badge">
             Session: {sessionCode}
           </div>
-          <div className="kiwi-icon">🥝</div> {/* updated emoji + class */}
+          <img src="/codekiwilogo.png" className="kiwi-icon" alt="CodeKiwi" />
           <h1>Welcome to CodeKiwi!</h1> {/* updated brand name */}
           <p>Let's get you set up for the session</p>
         </div>
