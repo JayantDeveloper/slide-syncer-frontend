@@ -57,6 +57,7 @@ export default function NavigationBar({ leftButtons, sessionCode, editorsLocked,
   return (
     <div className="slide-controls">
       <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+        <img src="/codekiwilogo.png" alt="CodeKiwi" style={{ height: "28px", width: "28px", objectFit: "contain", flexShrink: 0 }} />
         {leftButtons}
         <a
           href={`/student/${sessionCode}`}

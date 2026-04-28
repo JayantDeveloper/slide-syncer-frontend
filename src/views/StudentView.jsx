@@ -134,6 +134,7 @@ export default function StudentView() {
   if (sessionEnded) {
     return (
       <div className="session-ended-screen">
+        <img src="/codekiwilogo.png" alt="CodeKiwi" style={{ width: "80px", height: "80px", objectFit: "contain", marginBottom: "16px" }} />
         <h1>This session has ended.</h1>
         <p>Thanks for coding with us!</p>
       </div>
