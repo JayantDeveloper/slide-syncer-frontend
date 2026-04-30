@@ -1,4 +1,32 @@
-.run-button:active {
-    transform: translateY(1px);
-    background-color: #4a6b1f; /* Even darker when pressed */
+.run-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #6b8f2b;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+.run-button:hover:not(:disabled) {
+  background: #557321;
+}
+
+.run-button:active:not(:disabled) {
+  background: #4a6b1f;
+  transform: translateY(1px);
+}
+
+.run-button:disabled {
+  background: #3a3a3a;
+  color: #666;
+  cursor: not-allowed;
 }

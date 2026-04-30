@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Terminal } from "xterm";
 import { FitAddon } from "xterm-addon-fit";
-import Editor from "@monaco-editor/react";
+import EditorPane from "../components/EditorPane";
 import "xterm/css/xterm.css";
 import "./TeacherInspectCode.css";
 import NavigationBar from "../components/NavigationBar";
@@ -16,6 +16,7 @@ export default function TeacherInspectCode() {
   const navigate = useNavigate();
   const [code, setCode] = useState("");
   const [studentName, setStudentName] = useState("");
+  const [language, setLanguage] = useState("python");
   const [notes, setNotes] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const terminalRef = useRef(null);
@@ -37,6 +38,11 @@ export default function TeacherInspectCode() {
       .then((res) => res.json())
       .then(setNotes)
       .catch((err) => console.error("Failed to load notes:", err));
+
+    fetch(`${BACKEND_BASE_URL}/slides/${sessionCode}/meta.json`)
+      .then((res) => res.json())
+      .then((data) => { if (data.language) setLanguage(data.language); })
+      .catch(() => {});
   }, [sessionCode]);
 
   useEffect(() => {
@@ -47,7 +53,14 @@ export default function TeacherInspectCode() {
       fontSize: 14,
       lineHeight: 1.6,
       convertEol: true,
-      theme: { background: "#1e1e1e", foreground: "#cccccc" },
+      theme: {
+        background: "#1e1e1e",
+        foreground: "#d4d4d4",
+        cursor: "#6b8f2b",
+        green: "#6b8f2b",
+        brightGreen: "#a8d05f",
+        red: "#f44747",
+      },
     });
     const fitAddon = new FitAddon();
     term.loadAddon(fitAddon);
@@ -96,21 +109,7 @@ export default function TeacherInspectCode() {
         <h2 className="inspect-header">Inspecting: {studentName}</h2>
         <div className="teacher-editor-terminal">
           <div className="teacher-editor-container">
-            <Editor
-              height="100%"
-              language="python"
-              theme="vs-dark"
-              value={code}
-              options={{
-                readOnly: true,
-                padding: { top: 16, bottom: 16 },
-                scrollBeyondLastLine: false,
-                minimap: { enabled: false },
-                fontSize: 14,
-                lineHeight: 20,
-                fontFamily: "'Fira Code', 'Monaco', 'Consolas', monospace",
-              }}
-            />
+            <EditorPane value={code} readOnly language={language} />
           </div>
           <div className="teacher-terminal-pane" ref={terminalRef} />
         </div>

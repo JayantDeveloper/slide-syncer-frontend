@@ -7,17 +7,20 @@ import "./StudentView.css";
 import { useParams } from "react-router-dom";
 import { BACKEND_BASE_URL } from "../config";
 
-const STARTER_CODE = `# Write your code here\nprint("Hello, World!")\n`;
+const STARTER_CODE = {
+  python: `# Write your code here\nprint("Hello, World!")\n`,
+  javascript: `// Write your code here\nconsole.log("Hello, World!");\n`,
+};
 
 export default function StudentView() {
   const { sessionCode, studentId } = useParams();
-
   const [studentName] = useState(() => localStorage.getItem("studentName") || "Unnamed Student");
 
   const [slides, setSlides] = useState([]);
   const [slidesLoading, setSlidesLoading] = useState(true);
   const [slidesError, setSlidesError] = useState(null);
 
+  const [language, setLanguage] = useState("python");
   const [editorContent, setEditorContent] = useState("");
   const [output, setOutput] = useState("");
   const [editorLocked, setEditorLocked] = useState(false);
@@ -28,7 +31,6 @@ export default function StudentView() {
 
   const wsRef = useRef(null);
 
-  // Load slide images
   useEffect(() => {
     fetch(`${BACKEND_BASE_URL}/slides/${sessionCode}/index.json`)
       .then((res) => res.json())
@@ -36,7 +38,13 @@ export default function StudentView() {
       .catch(() => { setSlidesError("Failed to load slides"); setSlidesLoading(false); });
   }, [sessionCode]);
 
-  // Verify the session is still active
+  useEffect(() => {
+    fetch(`${BACKEND_BASE_URL}/slides/${sessionCode}/meta.json`)
+      .then((res) => res.json())
+      .then((data) => { if (data.language) setLanguage(data.language); })
+      .catch(() => {});
+  }, [sessionCode]);
+
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -51,7 +59,6 @@ export default function StudentView() {
     return () => { cancelled = true; };
   }, [sessionCode]);
 
-  // Load which slides are coding slides
   useEffect(() => {
     fetch(`${BACKEND_BASE_URL}/api/sessions/${sessionCode}/coding-slides`)
       .then((res) => res.json())
@@ -59,7 +66,6 @@ export default function StudentView() {
       .catch((err) => console.error("Failed to load coding slide info:", err));
   }, [sessionCode]);
 
-  // Hydrate editor lock on mount
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -67,69 +73,51 @@ export default function StudentView() {
         const res = await fetch(`${BACKEND_BASE_URL}/api/sessions/${sessionCode}/lock`);
         const { locked } = await res.json();
         if (!cancelled) setEditorLocked(!!locked);
-      } catch (e) {
-        console.warn("Failed to fetch initial lock state:", e);
-      }
+      } catch (e) {}
     })();
     return () => { cancelled = true; };
   }, [sessionCode]);
 
-  // WebSocket: sync slides, lock editors, detect session end
   useEffect(() => {
     if (sessionEnded) return;
-
     const wsUrl = BACKEND_BASE_URL.replace(/^http/, "ws");
     const ws = new WebSocket(wsUrl);
     wsRef.current = ws;
-
     ws.onopen = () => ws.send(JSON.stringify({ type: "join", sessionCode }));
-
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
-      if (data.type === "lock-editors" && data.sessionCode === sessionCode) {
-        setEditorLocked(!!data.locked);
-      }
-      if (data.type === "sync") {
-        setPendingSlideIndex(data.slide);
-      }
+      if (data.type === "lock-editors" && data.sessionCode === sessionCode) setEditorLocked(!!data.locked);
+      if (data.type === "sync") setPendingSlideIndex(data.slide);
       if (data.type === "session-ended" && data.sessionCode === sessionCode) {
         setSessionEnded(true);
         try { ws.close(); } catch {}
       }
     };
-
     ws.onerror = (e) => console.error("WS error", e);
     return () => { try { ws.close(); } catch {} };
   }, [sessionCode, sessionEnded]);
 
-  // When a new slide arrives, update editor content if it's a coding slide
   useEffect(() => {
     if (sessionEnded || pendingSlideIndex === null || codingSlides.length === 0) return;
     setCurrentSlideIndex(pendingSlideIndex);
-    setEditorContent(codingSlides.includes(pendingSlideIndex) ? STARTER_CODE : "");
-  }, [pendingSlideIndex, codingSlides, sessionEnded]);
+    setEditorContent(codingSlides.includes(pendingSlideIndex) ? (STARTER_CODE[language] || STARTER_CODE.python) : "");
+  }, [pendingSlideIndex, codingSlides, sessionEnded, language]);
 
-  // Heartbeat: post code/output to teacher dashboard
   useEffect(() => {
     if (sessionEnded) return;
-
     const interval = setInterval(() => {
       fetch(`${BACKEND_BASE_URL}/api/sessions/${sessionCode}/code`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          studentId,
-          name: studentName,
-          code: editorContent || "",
-          output: output || "",
-        }),
+        body: JSON.stringify({ studentId, name: studentName, code: editorContent || "", output: output || "" }),
       }).catch((err) => console.error("Failed to post code:", err));
     }, 3000);
-
     return () => clearInterval(interval);
   }, [sessionCode, studentId, studentName, editorContent, output, sessionEnded]);
 
   const isCodeSlide = codingSlides.length > 0 && codingSlides.includes(currentSlideIndex);
+  const filename = language === "javascript" ? "main.js" : "main.py";
+  const langLabel = language === "javascript" ? "JavaScript" : "Python";
 
   if (sessionEnded) {
     return (
@@ -157,15 +145,27 @@ export default function StudentView() {
       </div>
       {isCodeSlide && (
         <div className="student-right">
-          <div className="editor-container">
+          <div className="editor-section">
+            <div className="editor-header">
+              <span className="editor-filename">{filename}</span>
+              <div className="editor-header-right">
+                <span className="lang-badge">{langLabel}</span>
+                <RunButton code={editorContent} onOutput={setOutput} language={language} />
+              </div>
+            </div>
             <EditorPane
               value={editorContent}
               onCodeChange={setEditorContent}
               readOnly={editorLocked}
+              language={language}
             />
-            <RunButton code={editorContent} onOutput={setOutput} />
           </div>
-          <TerminalPane onOutputChange={setOutput} />
+          <div className="terminal-section">
+            <div className="terminal-header">
+              <span className="terminal-header-label">Output</span>
+            </div>
+            <TerminalPane onOutputChange={setOutput} />
+          </div>
         </div>
       )}
     </div>

@@ -5,63 +5,80 @@ import { TerminalContext } from "../context";
 import "xterm/css/xterm.css";
 import "./TerminalPane.css";
 
+const TERMINAL_THEME = {
+  background: "#1e1e1e",
+  foreground: "#d4d4d4",
+  cursor: "#6b8f2b",
+  cursorAccent: "#1e1e1e",
+  selectionBackground: "#6b8f2b40",
+  black: "#1e1e1e",
+  red: "#f44747",
+  green: "#6b8f2b",
+  yellow: "#dcdcaa",
+  blue: "#569cd6",
+  magenta: "#c586c0",
+  cyan: "#4ec9b0",
+  white: "#d4d4d4",
+  brightBlack: "#808080",
+  brightRed: "#f44747",
+  brightGreen: "#a8d05f",
+  brightYellow: "#e5e510",
+  brightBlue: "#6cb6eb",
+  brightMagenta: "#d7a7fb",
+  brightCyan: "#6fe7d7",
+  brightWhite: "#ffffff",
+};
+
 export default function TerminalPane({ onOutputChange }) {
   const containerRef = useRef(null);
   const { setTerminal } = useContext(TerminalContext);
 
   useEffect(() => {
-    if (containerRef.current) {
-      const term = new Terminal({
-        fontFamily: "'Fira Code', 'Monaco', 'Consolas', monospace",
-        fontSize: 14,
-        cursorStyle: "bar",
-        cursorBlink: false,
-        disableStdin: true,
-        theme: {
-          background: "#1e1e1e",
-          cursor: "transparent"
-        }
-      });
+    if (!containerRef.current) return;
 
-      const fitAddon = new FitAddon();
-      term.loadAddon(fitAddon);
-      term.open(containerRef.current);
+    const term = new Terminal({
+      fontFamily: "'Fira Code', 'Monaco', 'Consolas', monospace",
+      fontSize: 13,
+      lineHeight: 1.6,
+      cursorStyle: "bar",
+      cursorBlink: false,
+      disableStdin: true,
+      convertEol: true,
+      theme: TERMINAL_THEME,
+    });
 
-      try {
-        requestAnimationFrame(() => fitAddon.fit());
-      } catch (e) {
-        console.warn("Fit error:", e);
-      }
+    const fitAddon = new FitAddon();
+    term.loadAddon(fitAddon);
+    term.open(containerRef.current);
 
-      setTerminal(term);
-
-      term.writeIntercept = term.writeln;
-      term.writeln = (text) => {
-        term.writeIntercept(text);
-        if (onOutputChange) onOutputChange(text); 
-      };
-
-      // Debounced resize handler
-      let resizeTimeout;
-      const handleResize = () => {
-        clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout(() => {
-          try {
-            requestAnimationFrame(() => fitAddon.fit());
-          } catch (e) {
-            console.warn("Resize fit error:", e);
-          }
-        }, 100);
-      };
-
-      window.addEventListener("resize", handleResize);
-
-      return () => {
-        window.removeEventListener("resize", handleResize);
-        clearTimeout(resizeTimeout);
-        term.dispose();
-      };
+    try {
+      requestAnimationFrame(() => fitAddon.fit());
+    } catch (e) {
+      console.warn("Fit error:", e);
     }
+
+    setTerminal(term);
+
+    term.writeIntercept = term.writeln;
+    term.writeln = (text) => {
+      term.writeIntercept(text);
+      if (onOutputChange) onOutputChange(text);
+    };
+
+    let resizeTimeout;
+    const handleResize = () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        try { requestAnimationFrame(() => fitAddon.fit()); } catch (e) {}
+      }, 100);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      clearTimeout(resizeTimeout);
+      term.dispose();
+    };
   }, [setTerminal, onOutputChange]);
 
   return <div className="terminal-pane" ref={containerRef} />;

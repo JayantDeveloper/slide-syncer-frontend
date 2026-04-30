@@ -1,1 +1,1 @@
-export const BACKEND_BASE_URL = "https://api.codekiwi.app";
+export const BACKEND_BASE_URL = "https://codekiwi-app-backend.onrender.com";

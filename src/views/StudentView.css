@@ -1,6 +1,4 @@
-/* studentview.css (edited) */
-
-/* Root container spans viewport height; use 100% (not 100vw) to avoid scrollbar overflow */
+/* Root container */
 .student-container {
   display: flex;
   height: 100vh;
@@ -9,14 +7,13 @@
   background-color: #f37a7a;
 }
 
-/* Both columns include padding/border in their percent widths and can shrink */
 .student-left,
 .student-right {
   box-sizing: border-box;
   min-width: 0;
 }
 
-/* true 60/40 split */
+/* Slides column — 60% */
 .student-left {
   flex: 0 0 60%;
   max-width: 60%;
@@ -27,79 +24,128 @@
   align-items: center;
 }
 
-/* right column */
+/* Editor + terminal column — 40% */
 .student-right {
   flex: 0 0 40%;
   max-width: 40%;
   display: flex;
   flex-direction: column;
-  padding: 12px;
-  gap: 12px;
-  overflow: hidden; /* clip any tiny overflows (e.g., Monaco gutters) */
+  padding: 12px 12px 12px 0;
+  gap: 8px;
+  overflow: hidden;
 }
 
-/* editor card must not overflow horizontally */
-.editor-container {
-  box-sizing: border-box; /* include padding/border in width */
+/* ── Editor section ── */
+.editor-section {
   flex: 1;
-  min-width: 0;           /* prevent min-content overflow */
-  width: 100%;
-  background-color: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  min-width: 0;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  padding: 10px;
-  border: 1px solid #dee2e6;
+  border-radius: 10px;
+  border: 1px solid #2c2c2c;
+  background: #1e1e1e;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
 }
 
-/* ensure the inner editor wrapper plays nice */
+.editor-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  height: 38px;
+  background: #252526;
+  border-bottom: 1px solid #2c2c2c;
+  flex-shrink: 0;
+  border-radius: 10px 10px 0 0;
+  gap: 8px;
+}
+
+.editor-filename {
+  font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+  font-size: 13px;
+  color: #cccccc;
+  flex-shrink: 0;
+}
+
+.editor-header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.lang-badge {
+  background: #6b8f2b;
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 4px;
+  letter-spacing: 0.4px;
+  font-family: 'Fira Code', 'Monaco', monospace;
+  white-space: nowrap;
+}
+
+/* EditorPane fills remainder of editor-section */
 .editor-pane {
   box-sizing: border-box;
   min-width: 0;
+  min-height: 0;
   width: 100%;
-  height: 100%;
+  flex: 1;
+  overflow: hidden;
 }
 
-/* terminal pane respects width and stays inside */
+/* ── Terminal section ── */
+.terminal-section {
+  display: flex;
+  flex-direction: column;
+  border-radius: 10px;
+  border: 1px solid #2c2c2c;
+  overflow: hidden;
+  flex-shrink: 0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+}
+
+.terminal-header {
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  height: 32px;
+  background: #252526;
+  border-bottom: 1px solid #2c2c2c;
+  flex-shrink: 0;
+  border-radius: 10px 10px 0 0;
+}
+
+.terminal-header-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #a8d05f;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  font-family: 'Fira Code', 'Monaco', monospace;
+}
+
+/* xterm container inside terminal-section */
 .terminal-pane {
-  box-sizing: border-box; /* include border in width */
-  height: 200px;
+  box-sizing: border-box;
+  height: 190px;
   min-width: 0;
   width: 100%;
   background-color: #1e1e1e;
-  color: white;
-  border-radius: 8px;
   overflow: hidden;
-  border: 1px solid #2c2c2c;
 }
 
-/* run button */
-.run-button {
-  margin-top: 8px;
-  align-self: flex-end;
-  padding: 8px 16px;
-  font-weight: bold;
-  border: none;
-  border-radius: 6px;
-  background-color: #6b8f2b;
-  color: white;
-  cursor: pointer;
-  transition: background-color 0.2s ease-in-out;
-}
-
-.run-button:hover {
-  background-color: #557321;
-}
-
-/* Full width mode for student-left when right panel is hidden */
+/* Full-width mode when no coding slide */
 .student-left.full-width {
-  flex: 1 1 auto;            /* take all available space */
+  flex: 1 1 auto;
   max-width: 100%;
 }
 
-/* Slide area: fill space and center content */
+/* Slide display */
 .slide-wrapper {
   width: 100%;
   height: 100%;
@@ -108,18 +154,15 @@
   align-items: center;
 }
 
-/* Ensure the Slides root fills the wrapper */
 .slide-wrapper > * {
   width: 100%;
   height: 100%;
 }
 
-/* Neutralize any artificial cap */
 .slide-wrapper.shrink {
   max-width: none;
 }
 
-/* Ensure media inside Slides scales nicely */
 .slide-wrapper img,
 .slide-wrapper canvas,
 .slide-wrapper video {
@@ -129,7 +172,7 @@
   display: block;
 }
 
-/* Session ended screen */
+/* Session ended */
 .session-ended-screen {
   animation: fadeIn 0.4s ease-in;
   display: flex;
