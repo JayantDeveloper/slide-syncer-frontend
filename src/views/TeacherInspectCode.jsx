@@ -121,16 +121,23 @@ export default function TeacherInspectCode() {
             <button
               key="presentation"
               onClick={() => navigate(`/teacher/${sessionCode}`)}
-              className="teacher-button"
+              className="nav-btn nav-btn--ghost"
             >
-              Presentation View
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="15 18 9 12 15 6" />
+              </svg>
+              Presentation
             </button>,
             <button
               key="dashboard"
               onClick={() => navigate(`/teacher/dashboard/${sessionCode}`)}
-              className="teacher-button"
+              className="nav-btn nav-btn--ghost"
             >
-              Dashboard View
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" />
+                <rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" />
+              </svg>
+              Dashboard
             </button>,
           ]}
         />

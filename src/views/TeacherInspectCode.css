@@ -5,7 +5,7 @@
   flex-direction: column;
   height: 100vh;
   overflow: hidden;
-  background-color: #f37a7a;
+  background-color: #1a2b08;
 }
 
 .teacher-editor-terminal {
@@ -105,7 +105,7 @@
 
 .inspect-header {
   margin: 14px 0 16px 14px;
-  color: #2c3e50;
+  color: #e8f5d0;
   font-size: 1.5rem;
   font-weight: 600;
 }
