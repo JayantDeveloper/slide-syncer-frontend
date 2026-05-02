@@ -33,14 +33,6 @@ function Slides({ isTeacher, slides = [], currentIndex = 0, sessionCode, loading
           draggable={false}
         />
       </div>
-      {isTeacher && (
-        <div className="share-block">
-          <label className="share-label">Share this link with students:</label>
-          <div className="share-url">
-            {`${window.location.origin}/student/${sessionCode}`}
-          </div>
-        </div>
-      )}
     </div>
   );
 }
