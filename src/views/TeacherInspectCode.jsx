@@ -22,7 +22,6 @@ export default function TeacherInspectCode() {
   const { sessionCode, studentId } = useParams();
   const navigate = useNavigate();
   const [code, setCode] = useState("");
-  const [studentName, setStudentName] = useState("");
   const [output, setOutput] = useState("");
   const [language, setLanguage] = useState("python");
   const [notes, setNotes] = useState([]);
@@ -71,7 +70,6 @@ export default function TeacherInspectCode() {
   // Reset display when switching students
   useEffect(() => {
     setCode("");
-    setStudentName("");
     setOutput("");
     lastOutputRef.current = "";
     if (termInstance.current) termInstance.current.reset();
@@ -111,7 +109,6 @@ export default function TeacherInspectCode() {
         );
         const data = await res.json();
         setCode(data.code || "");
-        setStudentName(data.name || "Unknown");
         const newOutput = data.output || "";
         setOutput(newOutput);
 

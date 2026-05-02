@@ -37,7 +37,7 @@ export default function TeacherDashboardView() {
   const [notes, setNotes] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [lastUpdated, setLastUpdated] = useState({});
-  const [tick, setTick] = useState(0);
+  const [, setTick] = useState(0);
   const lastSeenCodeRef = useRef({});
 
   const { editorsLocked, setEditorsLocked, toggleLock } = useLockEditor(sessionCode);
