@@ -11,14 +11,23 @@ import { BACKEND_BASE_URL } from "../config";
 import { useSessionWebSocket } from "../hooks/useSessionWebSocket";
 import { useLockEditor } from "../hooks/useLockEditor";
 
+function getOutputStatus(output) {
+  if (!output || output.trim() === "" || output === "No terminal output yet.") return null;
+  const lower = output.toLowerCase();
+  if (lower.includes("error") || lower.includes("traceback") || lower.includes("exception")) return "error";
+  return "success";
+}
+
 export default function TeacherInspectCode() {
   const { sessionCode, studentId } = useParams();
   const navigate = useNavigate();
   const [code, setCode] = useState("");
   const [studentName, setStudentName] = useState("");
+  const [output, setOutput] = useState("");
   const [language, setLanguage] = useState("python");
   const [notes, setNotes] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [students, setStudents] = useState([]);
   const terminalRef = useRef(null);
   const termInstance = useRef(null);
   const lastOutputRef = useRef("");
@@ -37,29 +46,52 @@ export default function TeacherInspectCode() {
     fetch(`${BACKEND_BASE_URL}/slides/${sessionCode}/notes.json`)
       .then((res) => res.json())
       .then(setNotes)
-      .catch((err) => console.error("Failed to load notes:", err));
-
+      .catch(() => {});
     fetch(`${BACKEND_BASE_URL}/slides/${sessionCode}/meta.json`)
       .then((res) => res.json())
       .then((data) => { if (data.language) setLanguage(data.language); })
       .catch(() => {});
   }, [sessionCode]);
 
+  // Keep students list fresh for prev/next/dropdown
+  useEffect(() => {
+    if (!sessionCode) return;
+    const poll = async () => {
+      try {
+        const res = await fetch(`${BACKEND_BASE_URL}/api/sessions/${sessionCode}/students`);
+        const data = await res.json();
+        setStudents(data.students || []);
+      } catch { /* silent */ }
+    };
+    poll();
+    const id = setInterval(poll, 3000);
+    return () => clearInterval(id);
+  }, [sessionCode]);
+
+  // Reset display when switching students
+  useEffect(() => {
+    setCode("");
+    setStudentName("");
+    setOutput("");
+    lastOutputRef.current = "";
+    if (termInstance.current) termInstance.current.reset();
+  }, [studentId]);
+
   useEffect(() => {
     if (!terminalRef.current || termInstance.current) return;
     const term = new Terminal({
       disableStdin: true,
       fontFamily: "'Fira Code', 'Monaco', 'Consolas', monospace",
-      fontSize: 14,
+      fontSize: 13,
       lineHeight: 1.6,
       convertEol: true,
       theme: {
-        background: "#1e1e1e",
-        foreground: "#d4d4d4",
+        background: "#111a08",
+        foreground: "#b0cc90",
         cursor: "#6b8f2b",
-        green: "#6b8f2b",
-        brightGreen: "#a8d05f",
-        red: "#f44747",
+        green: "#a8d05f",
+        brightGreen: "#c8e89a",
+        red: "#f87171",
       },
     });
     const fitAddon = new FitAddon();
@@ -80,12 +112,14 @@ export default function TeacherInspectCode() {
         const data = await res.json();
         setCode(data.code || "");
         setStudentName(data.name || "Unknown");
+        const newOutput = data.output || "";
+        setOutput(newOutput);
 
-        const newOutput = data.output || "No terminal output yet.";
-        if (termInstance.current && newOutput !== lastOutputRef.current) {
-          lastOutputRef.current = newOutput;
+        const displayed = newOutput || "No terminal output yet.";
+        if (termInstance.current && displayed !== lastOutputRef.current) {
+          lastOutputRef.current = displayed;
           termInstance.current.reset();
-          newOutput.split("\n").forEach((line, i, arr) => {
+          displayed.split("\n").forEach((line, i, arr) => {
             const isLast = i === arr.length - 1;
             if (isLast && line.trim() === "✔ Done") {
               termInstance.current.write("\x1b[32m✔ Done\x1b[0m\r\n");
@@ -103,16 +137,99 @@ export default function TeacherInspectCode() {
     return () => clearInterval(interval);
   }, [sessionCode, studentId]);
 
+  const currentStudentIdx = students.findIndex((s) => s.id === studentId);
+  const prevStudent = currentStudentIdx > 0 ? students[currentStudentIdx - 1] : null;
+  const nextStudent = currentStudentIdx < students.length - 1 ? students[currentStudentIdx + 1] : null;
+
+  const goTo = (id) => navigate(`/teacher/student/${sessionCode}/${id}`);
+
+  const outputStatus = getOutputStatus(output);
+  const currentNote = notes[currentIndex];
+  const isCodingSlide = currentNote && currentNote.trimStart().toLowerCase().startsWith("code question");
+
   return (
     <div className="teacher-container">
       <div className="slide-area">
-        <h2 className="inspect-header">Inspecting: {studentName}</h2>
+
+        {/* ── Inspect header bar ── */}
+        <div className="inspect-header-bar">
+          <div className="inspect-nav-group">
+            <button
+              className="inspect-nav-btn"
+              onClick={() => prevStudent && goTo(prevStudent.id)}
+              disabled={!prevStudent}
+              title={prevStudent ? `← ${prevStudent.name}` : "No previous student"}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="15 18 9 12 15 6" />
+              </svg>
+            </button>
+
+            <select
+              className="inspect-student-select"
+              value={studentId}
+              onChange={(e) => goTo(e.target.value)}
+            >
+              {students.map((s) => (
+                <option key={s.id} value={s.id}>{s.name}</option>
+              ))}
+            </select>
+
+            <button
+              className="inspect-nav-btn"
+              onClick={() => nextStudent && goTo(nextStudent.id)}
+              disabled={!nextStudent}
+              title={nextStudent ? `${nextStudent.name} →` : "No next student"}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+            </button>
+
+            <span className="inspect-student-pos">
+              {currentStudentIdx >= 0 ? `${currentStudentIdx + 1} / ${students.length}` : "—"}
+            </span>
+          </div>
+
+          {outputStatus && (
+            <span className={`inspect-status-badge inspect-status-badge--${outputStatus}`}>
+              {outputStatus === "success" ? (
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              ) : (
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
+                </svg>
+              )}
+              {outputStatus === "success" ? "Ran successfully" : "Error in output"}
+            </span>
+          )}
+        </div>
+
+        {/* ── Question context strip ── */}
+        {isCodingSlide && (
+          <div className="inspect-question-strip">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+              <line x1="16" y1="13" x2="8" y2="13" />
+              <line x1="16" y1="17" x2="8" y2="17" />
+              <polyline points="10 9 9 9 8 9" />
+            </svg>
+            <span className="inspect-question-label">Slide {currentIndex + 1}:</span>
+            <span className="inspect-question-text">{currentNote.replace(/^code question:\s*/i, "")}</span>
+          </div>
+        )}
+
+        {/* ── Editor + Terminal ── */}
         <div className="teacher-editor-terminal">
           <div className="teacher-editor-container">
             <EditorPane value={code} readOnly language={language} />
           </div>
           <div className="teacher-terminal-pane" ref={terminalRef} />
         </div>
+
         <NavigationBar
           sessionCode={sessionCode}
           editorsLocked={editorsLocked}

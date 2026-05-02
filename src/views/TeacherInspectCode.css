@@ -19,7 +19,7 @@
 /* ========= Code Editor Pane ========= */
 
 .teacher-editor-container {
-  flex: 1;
+  flex: 13;  /* 65% of the row */
   background-color: #1e1e1e;
   border-radius: 8px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
@@ -47,8 +47,8 @@
 /* ========= Terminal Styling ========= */
 
 .teacher-terminal-pane {
-  flex: 1;
-  background-color: #1e1e1e;
+  flex: 7;  /* 35% of the row */
+  background-color: #111a08;
   color: white;
   border-radius: 8px;
   overflow: auto;
@@ -76,8 +76,8 @@
 /* Terminal background & text override */
 .teacher-terminal-pane .xterm-viewport,
 .teacher-terminal-pane .xterm-screen {
-  background-color: #1e1e1e !important;
-  color: #cccccc !important;
+  background-color: #111a08 !important;
+  color: #b0cc90 !important;
 }
 
 /* Terminal cursor & selection */
@@ -101,13 +101,122 @@
   border-radius: 4px;
 }
 
-/* ========= Header ========= */
+/* ========= Header bar ========= */
 
-.inspect-header {
-  margin: 14px 0 16px 14px;
+.inspect-header-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px 6px;
+  flex-shrink: 0;
+}
+
+.inspect-nav-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.inspect-nav-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  background: #1e3510;
+  border: 1.5px solid #2e4d18;
+  border-radius: 6px;
+  color: #a8d05f;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.inspect-nav-btn:hover:not(:disabled) {
+  background: #2a4a1c;
+  border-color: #4a7020;
+}
+.inspect-nav-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.inspect-student-select {
+  background: #1e3510;
+  border: 1.5px solid #2e4d18;
+  border-radius: 6px;
   color: #e8f5d0;
-  font-size: 1.5rem;
+  font-size: 0.875rem;
   font-weight: 600;
+  padding: 5px 10px;
+  cursor: pointer;
+  outline: none;
+  min-width: 160px;
+}
+.inspect-student-select:focus {
+  border-color: #6b8f2b;
+}
+.inspect-student-select option {
+  background: #1a2b08;
+  color: #e8f5d0;
+}
+
+.inspect-student-pos {
+  font-size: 0.78rem;
+  color: #6b8f2b;
+  font-weight: 500;
+  margin-left: 4px;
+  white-space: nowrap;
+}
+
+/* ── Output status badge ── */
+
+.inspect-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+.inspect-status-badge--success {
+  background: #1a3a08;
+  color: #a8d05f;
+  border: 1px solid #4a7020;
+}
+.inspect-status-badge--error {
+  background: #3f2200;
+  color: #fbbf24;
+  border: 1px solid #92400e;
+}
+
+/* ── Question context strip ── */
+
+.inspect-question-strip {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0 14px 6px;
+  padding: 8px 12px;
+  background: #1e3510;
+  border: 1px solid #2e4d18;
+  border-left: 3px solid #a8d05f;
+  border-radius: 6px;
+  flex-shrink: 0;
+  color: #c8e89a;
+}
+
+.inspect-question-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #a8d05f;
+  white-space: nowrap;
+}
+
+.inspect-question-text {
+  font-size: 0.78rem;
+  color: #c8e89a;
+  line-height: 1.4;
 }
 
 .student-count {
