@@ -27,3 +27,5 @@
   background-color: rgba(107, 143, 43, 0.4);
   border-radius: 3px;
 }
+
+.terminal-pane .xterm-cursor-layer { display: none; }

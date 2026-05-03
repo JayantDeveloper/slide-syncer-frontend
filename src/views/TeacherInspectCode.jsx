@@ -88,7 +88,7 @@ export default function TeacherInspectCode() {
       theme: {
         background: "#111a08",
         foreground: "#b0cc90",
-        cursor: "#6b8f2b",
+        cursor: "transparent",
         green: "#a8d05f",
         brightGreen: "#c8e89a",
         red: "#f87171",

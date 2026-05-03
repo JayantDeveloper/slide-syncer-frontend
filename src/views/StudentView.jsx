@@ -162,6 +162,11 @@ export default function StudentView() {
           </div>
           <div className="terminal-section">
             <div className="terminal-header">
+              <div className="terminal-dots">
+                <span className="terminal-dot terminal-dot--red" />
+                <span className="terminal-dot terminal-dot--yellow" />
+                <span className="terminal-dot terminal-dot--green" />
+              </div>
               <span className="terminal-header-label">Output</span>
             </div>
             <TerminalPane onOutputChange={setOutput} />

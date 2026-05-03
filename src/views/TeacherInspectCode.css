@@ -80,11 +80,8 @@
   color: #b0cc90 !important;
 }
 
-/* Terminal cursor & selection */
-.teacher-terminal-pane .xterm-cursor {
-  background-color: transparent !important;
-  border-left: none !important;
-}
+/* Hide cursor — read-only terminal */
+.teacher-terminal-pane .xterm-cursor-layer { display: none; }
 
 .teacher-terminal-pane .xterm-selection {
   background-color: #dcdcaa !important;

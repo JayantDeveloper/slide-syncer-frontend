@@ -112,19 +112,37 @@
 .terminal-header {
   display: flex;
   align-items: center;
-  padding: 0 14px;
-  height: 32px;
-  background: #252526;
+  gap: 10px;
+  padding: 0 12px;
+  height: 34px;
+  background: #1a1a1a;
   border-bottom: 1px solid #2c2c2c;
   flex-shrink: 0;
   border-radius: 10px 10px 0 0;
 }
 
+.terminal-dots {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+}
+
+.terminal-dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+}
+
+.terminal-dot--red    { background: #ff5f57; }
+.terminal-dot--yellow { background: #ffbd2e; }
+.terminal-dot--green  { background: #28c840; }
+
 .terminal-header-label {
   font-size: 11px;
-  font-weight: 700;
-  color: #a8d05f;
-  letter-spacing: 1px;
+  font-weight: 600;
+  color: #6b7280;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   font-family: 'Fira Code', 'Monaco', monospace;
 }

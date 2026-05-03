@@ -8,8 +8,8 @@ import "./TerminalPane.css";
 const TERMINAL_THEME = {
   background: "#1e1e1e",
   foreground: "#d4d4d4",
-  cursor: "#6b8f2b",
-  cursorAccent: "#1e1e1e",
+  cursor: "transparent",
+  cursorAccent: "transparent",
   selectionBackground: "#6b8f2b40",
   black: "#1e1e1e",
   red: "#f44747",
