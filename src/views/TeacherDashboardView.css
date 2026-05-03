@@ -54,23 +54,24 @@
 }
 
 .tdb-grid::-webkit-scrollbar { width: 6px; }
-.tdb-grid::-webkit-scrollbar-thumb { background: #3a5214; border-radius: 3px; }
+.tdb-grid::-webkit-scrollbar-thumb { background: #4a7020; border-radius: 3px; }
 
 /* ── Student card ────────────────────────────────────────────── */
 
 .student-card {
-  background: #1e3510;
-  border: 1px solid #2e4d18;
+  background: #2d5214;
+  border: 1px solid #4a7a20;
   border-radius: 12px;
   cursor: pointer;
-  transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+  transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s, background 0.15s;
   overflow: hidden;
 }
 
 .student-card:hover {
+  background: #366018;
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
-  border-color: #4a7020;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.4);
+  border-color: #6b8f2b;
 }
 
 /* Accent left border by status */
@@ -107,7 +108,7 @@
 
 .card-timestamp {
   font-size: 0.72rem;
-  color: #6b8f2b;
+  color: #a8d05f;
   white-space: nowrap;
   flex-shrink: 0;
 }
@@ -146,8 +147,8 @@
 /* ── Code preview block ──────────────────────────────────────── */
 
 .card-code-block {
-  background: #111a08;
-  border-top: 1px solid #2a3e14;
+  background: #1a3a08;
+  border-top: 1px solid #3a6014;
   padding: 10px 14px;
 }
 
@@ -176,12 +177,12 @@
 }
 
 .tdb-empty svg {
-  color: #2e4d18;
+  color: #4a7020;
 }
 
 .tdb-empty p {
   font-size: 1rem;
   font-weight: 500;
-  color: #4a7020;
+  color: #6b9a30;
   margin: 0;
 }
