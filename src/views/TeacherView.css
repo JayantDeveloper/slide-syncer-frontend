@@ -86,14 +86,14 @@
     background: #1d4ed8;
   }
 
-  /* Lock Editors — unlocked: solid green */
+  /* Lock Editors — unlocked: slate */
   .nav-btn--lock-off {
-    background: #4a7a20;
+    background: #475569;
     border: 1.5px solid transparent;
     color: white;
   }
   .nav-btn--lock-off:hover {
-    background: #3e6a1a;
+    background: #374151;
   }
 
   /* Lock Editors — locked: solid amber */
