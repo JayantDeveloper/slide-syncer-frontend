@@ -131,15 +131,20 @@ export default function TeacherDashboardView() {
                   <div
                     key={student.id}
                     className={`student-card student-card--${status}`}
+                    style={student.color ? { background: student.color, borderColor: student.color } : {}}
                     onClick={() => navigate(`/teacher/student/${sessionCode}/${student.id}`)}
                   >
                     <div className="card-header">
                       <div className="card-name-row">
-                        <span className={`status-dot status-dot--${status}`} />
-                        <span className="card-name">{student.name}</span>
-                        {ts && <span className="card-timestamp">{ts}</span>}
+                        <span className="status-dot status-dot--white" />
+                        <span className="card-name" style={student.color ? { color: "white" } : {}}>
+                          {student.name}
+                        </span>
+                        {ts && <span className="card-timestamp" style={student.color ? { color: "rgba(255,255,255,0.75)" } : {}}>
+                          {ts}
+                        </span>}
                       </div>
-                      <span className={`status-pill status-pill--${status}`}>
+                      <span className="status-pill status-pill--on-color">
                         {STATUS_LABEL[status]}
                       </span>
                     </div>

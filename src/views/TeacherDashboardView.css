@@ -78,10 +78,9 @@
 }
 
 .student-card:hover {
-  background: #d8edba;
+  filter: brightness(1.1);
   transform: translateY(-2px);
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
-  border-color: #8ab840;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.4);
 }
 
 /* Accent left border by status */
@@ -136,6 +135,7 @@
 .status-dot--coding { background: #a8d05f; box-shadow: 0 0 5px #a8d05f80; }
 .status-dot--ran    { background: #3b82f6; box-shadow: 0 0 5px #3b82f660; }
 .status-dot--error  { background: #f59e0b; box-shadow: 0 0 5px #f59e0b60; }
+.status-dot--white  { background: rgba(255,255,255,0.85); }
 
 /* ── Status pill ─────────────────────────────────────────────── */
 
@@ -153,6 +153,13 @@
 .status-pill--coding { background: #dcf5a0; color: #3a6010; border: 1px solid #8ab840; }
 .status-pill--ran    { background: #dbeafe; color: #1d4ed8; border: 1px solid #93c5fd; }
 .status-pill--error  { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+
+/* Pill used on colored student cards */
+.status-pill--on-color {
+  background: rgba(0,0,0,0.25);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.3);
+}
 
 /* ── Code preview block ──────────────────────────────────────── */
 
