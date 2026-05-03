@@ -59,8 +59,8 @@
 /* ── Student card ────────────────────────────────────────────── */
 
 .student-card {
-  background: #2d5214;
-  border: 1px solid #4a7a20;
+  background: #eaf5d0;
+  border: 1px solid #b8d880;
   border-radius: 12px;
   cursor: pointer;
   transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s, background 0.15s;
@@ -68,10 +68,10 @@
 }
 
 .student-card:hover {
-  background: #366018;
+  background: #d8edba;
   transform: translateY(-2px);
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.4);
-  border-color: #6b8f2b;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
+  border-color: #8ab840;
 }
 
 /* Accent left border by status */
@@ -100,7 +100,7 @@
 .card-name {
   font-weight: 600;
   font-size: 0.9rem;
-  color: #e8f5d0;
+  color: #1e3a08;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -108,7 +108,7 @@
 
 .card-timestamp {
   font-size: 0.72rem;
-  color: #a8d05f;
+  color: #5a8020;
   white-space: nowrap;
   flex-shrink: 0;
 }
@@ -139,16 +139,16 @@
   letter-spacing: 0.02em;
 }
 
-.status-pill--empty  { background: #374151; color: #9ca3af; }
-.status-pill--coding { background: #1a3a08; color: #a8d05f; border: 1px solid #4a7020; }
-.status-pill--ran    { background: #1e3a5f; color: #93c5fd; border: 1px solid #2563eb; }
-.status-pill--error  { background: #3f2200; color: #fbbf24; border: 1px solid #92400e; }
+.status-pill--empty  { background: #e5e7eb; color: #4b5563; border: 1px solid #d1d5db; }
+.status-pill--coding { background: #dcf5a0; color: #3a6010; border: 1px solid #8ab840; }
+.status-pill--ran    { background: #dbeafe; color: #1d4ed8; border: 1px solid #93c5fd; }
+.status-pill--error  { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
 
 /* ── Code preview block ──────────────────────────────────────── */
 
 .card-code-block {
-  background: #1a3a08;
-  border-top: 1px solid #3a6014;
+  background: #d5eab0;
+  border-top: 1px solid #b0cc80;
   padding: 10px 14px;
 }
 
@@ -156,7 +156,7 @@
   font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
   font-size: 0.72rem;
   line-height: 1.55;
-  color: #b0cc90;
+  color: #2a4a10;
   white-space: pre-wrap;
   word-break: break-all;
   margin: 0;
