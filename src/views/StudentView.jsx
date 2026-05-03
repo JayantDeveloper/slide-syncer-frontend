@@ -98,7 +98,7 @@ export default function StudentView() {
     };
     ws.onerror = (e) => console.error("WS error", e);
     return () => { try { ws.close(); } catch {} };
-  }, [sessionCode, sessionEnded]);
+  }, [sessionCode, sessionEnded, studentId]);
 
   useEffect(() => {
     if (sessionEnded || pendingSlideIndex === null || codingSlides.length === 0) return;
