@@ -32,7 +32,9 @@
   transition: background 0.15s;
   font-family: inherit;
   flex: 0 0 auto;
-  margin: 12px 0;
+  margin: 12px auto;
+  display: block;
+  width: fit-content;
 }
 .session-id--clickable:hover {
   background: rgba(255, 255, 255, 0.1);
