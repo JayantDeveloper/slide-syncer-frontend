@@ -162,11 +162,11 @@ export default function StudentView() {
           </div>
           <div className="terminal-section">
             <div className="terminal-header">
-              <div className="terminal-dots">
-                <span className="terminal-dot terminal-dot--red" />
-                <span className="terminal-dot terminal-dot--yellow" />
-                <span className="terminal-dot terminal-dot--green" />
-              </div>
+              <svg className="terminal-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="2" y="2" width="20" height="20" rx="4" />
+                <polyline points="8 9 13 12 8 15" />
+                <line x1="13" y1="15" x2="18" y2="15" />
+              </svg>
               <span className="terminal-header-label">Output</span>
             </div>
             <TerminalPane onOutputChange={setOutput} />

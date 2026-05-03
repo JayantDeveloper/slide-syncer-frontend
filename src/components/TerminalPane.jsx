@@ -40,7 +40,7 @@ export default function TerminalPane({ onOutputChange }) {
       fontFamily: "'Fira Code', 'Monaco', 'Consolas', monospace",
       fontSize: 13,
       lineHeight: 1.6,
-      cursorStyle: "bar",
+      cursorStyle: "block",
       cursorBlink: false,
       disableStdin: true,
       convertEol: true,

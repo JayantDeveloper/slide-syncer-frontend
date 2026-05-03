@@ -107,7 +107,7 @@
 }
 
 .card-name {
-  font-weight: 600;
+  font-weight: 800;
   font-size: 0.9rem;
   color: #1a2b08;
   white-space: nowrap;
@@ -117,6 +117,7 @@
 
 .card-timestamp {
   font-size: 0.72rem;
+  font-weight: 700;
   color: #6b8f2b;
   white-space: nowrap;
   flex-shrink: 0;

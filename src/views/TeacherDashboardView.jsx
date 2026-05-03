@@ -135,7 +135,7 @@ export default function TeacherDashboardView() {
                   >
                     <div className="card-header">
                       <div className="card-name-row">
-                        <span className="status-dot status-dot--white" />
+                        <span className={`status-dot status-dot--${status}`} />
                         <span className="card-name" style={student.color ? { color: "white" } : {}}>
                           {student.name}
                         </span>
@@ -157,7 +157,7 @@ export default function TeacherDashboardView() {
                           background: "transparent",
                           fontSize: "0.72rem",
                           lineHeight: "1.55",
-                          maxHeight: "100px",
+                          height: "100px",
                           overflowY: "auto",
                           overflowX: "hidden",
                         }}
