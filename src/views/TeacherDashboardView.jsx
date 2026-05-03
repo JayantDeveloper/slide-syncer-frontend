@@ -109,7 +109,6 @@ export default function TeacherDashboardView() {
         <div className="tdb-main">
           <div className="tdb-header-row">
             <h2 className="tdb-title">Student Code Dashboard</h2>
-            <span className="tdb-count">{students.length} {students.length === 1 ? "student" : "students"}</span>
           </div>
 
           {students.length === 0 ? (
@@ -144,7 +143,7 @@ export default function TeacherDashboardView() {
                           {ts}
                         </span>}
                       </div>
-                      <span className="status-pill status-pill--on-color">
+                      <span className={`status-pill status-pill--on-${status}`}>
                         {STATUS_LABEL[status]}
                       </span>
                     </div>
