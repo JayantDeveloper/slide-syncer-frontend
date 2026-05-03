@@ -29,4 +29,10 @@
 }
 
 .terminal-pane .xterm-cursor-layer,
-.teacher-terminal-pane .xterm-cursor-layer { display: none !important; }
+.terminal-pane .xterm-cursor,
+.teacher-terminal-pane .xterm-cursor-layer,
+.teacher-terminal-pane .xterm-cursor {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
