@@ -82,6 +82,8 @@ export default function TeacherInspectCode() {
       fontFamily: "'Fira Code', 'Monaco', 'Consolas', monospace",
       fontSize: 13,
       lineHeight: 1.6,
+      cursorStyle: "bar",
+      cursorBlink: false,
       convertEol: true,
       theme: {
         background: "#111a08",
