@@ -1,4 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
+import { Light as SyntaxHighlighter } from "react-syntax-highlighter";
+import python from "react-syntax-highlighter/dist/esm/languages/hljs/python";
+import javascript from "react-syntax-highlighter/dist/esm/languages/hljs/javascript";
+import { vs2015 } from "react-syntax-highlighter/dist/esm/styles/hljs";
 import "./TeacherDashboardView.css";
 import NavigationBar from "../components/NavigationBar";
 import NotesSidebar from "../components/NotesSidebar";
@@ -6,6 +10,9 @@ import { useParams, useNavigate } from "react-router-dom";
 import { BACKEND_BASE_URL } from "../config";
 import { useSessionWebSocket } from "../hooks/useSessionWebSocket";
 import { useLockEditor } from "../hooks/useLockEditor";
+
+SyntaxHighlighter.registerLanguage("python", python);
+SyntaxHighlighter.registerLanguage("javascript", javascript);
 
 function getStatus(student) {
   const hasCode = student.code && student.code.trim().length > 0;
@@ -37,6 +44,7 @@ export default function TeacherDashboardView() {
   const [notes, setNotes] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [lastUpdated, setLastUpdated] = useState({});
+  const [language, setLanguage] = useState("python");
   const [, setTick] = useState(0);
   const lastSeenCodeRef = useRef({});
 
@@ -60,6 +68,10 @@ export default function TeacherDashboardView() {
     fetch(`${BACKEND_BASE_URL}/slides/${sessionCode}/notes.json`)
       .then((res) => res.json())
       .then(setNotes)
+      .catch(() => {});
+    fetch(`${BACKEND_BASE_URL}/slides/${sessionCode}/meta.json`)
+      .then((res) => res.json())
+      .then((data) => { if (data.language) setLanguage(data.language); })
       .catch(() => {});
   }, [sessionCode]);
 
@@ -132,9 +144,22 @@ export default function TeacherDashboardView() {
                       </span>
                     </div>
                     <div className="card-code-block">
-                      <pre className="card-code">
+                      <SyntaxHighlighter
+                        language={language}
+                        style={vs2015}
+                        customStyle={{
+                          margin: 0,
+                          padding: 0,
+                          background: "transparent",
+                          fontSize: "0.72rem",
+                          lineHeight: "1.55",
+                          maxHeight: "100px",
+                          overflow: "hidden",
+                        }}
+                        codeTagProps={{ style: { fontFamily: "'Fira Code', 'Monaco', 'Consolas', monospace" } }}
+                      >
                         {student.code?.slice(0, 220) || "# No code yet"}
-                      </pre>
+                      </SyntaxHighlighter>
                     </div>
                   </div>
                 );
