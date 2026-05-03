@@ -29,8 +29,8 @@
     align-items: center;
     margin-top: 12px;
     padding: 10px;
-    background-color: #385e1e;
-    border-top: 1px solid #4a7a28;
+    background-color: #6b8f2b;
+    border-top: 1px solid rgba(0,0,0,0.15);
     border-radius: 8px;
   }
 
@@ -51,29 +51,29 @@
     transition: background 0.15s, border-color 0.15s, color 0.15s;
   }
 
-  /* Prev / Next / back-nav — dark inset green */
+  /* Prev / Next / back-nav */
   .nav-btn--ghost {
-    background: #1e3a0e;
-    border: 1.5px solid #2a5014;
-    color: #c8e89a;
+    background: rgba(0,0,0,0.20);
+    border: 1.5px solid rgba(0,0,0,0.15);
+    color: #d5f1d5;
   }
   .nav-btn--ghost:hover:not(:disabled) {
-    background: #264a14;
-    border-color: #3a6a1c;
+    background: rgba(0,0,0,0.32);
+    border-color: rgba(0,0,0,0.22);
   }
   .nav-btn--ghost:disabled {
     opacity: 0.35;
     cursor: default;
   }
 
-  /* Dashboard — solid mid green */
+  /* Dashboard — dark punched-in */
   .nav-btn--primary {
-    background: #4a7a20;
+    background: #1a2b08;
     border: 1.5px solid transparent;
-    color: white;
+    color: #d5f1d5;
   }
   .nav-btn--primary:hover {
-    background: #3e6a1a;
+    background: #0d1804;
   }
 
   /* Student View — solid blue */
@@ -116,18 +116,18 @@
     background: #a93226;
   }
 
-  /* Student count badge — dark pill */
+  /* Student count badge */
   .student-count {
     display: inline-flex;
     align-items: center;
     gap: 5px;
     font-weight: 600;
     padding: 6px 11px;
-    background-color: #1e3a0e;
+    background-color: rgba(0,0,0,0.20);
     border-radius: 6px;
     font-size: 0.85rem;
-    color: #a8d05f;
-    border: 1.5px solid #2a5014;
+    color: #d5f1d5;
+    border: 1.5px solid rgba(0,0,0,0.15);
   }
 
   .teacher-loading {
@@ -136,7 +136,7 @@
     justify-content: center;
     height: 100vh;
     font-size: 1.1rem;
-    color: #a8d05f;
+    color: #6b8f2b;
     background: #1a2b08;
   }
 
@@ -156,7 +156,7 @@
 
   .lobby-card {
     width: min(560px, 92vw);
-    background: #253510;
+    background: rgba(107,143,43,0.18);
     border-radius: 16px;
     padding: 32px;
     display: flex;
@@ -166,23 +166,23 @@
   }
 
   .lobby-url-box {
-    background: #1e2c0c;
+    background: rgba(0,0,0,0.30);
     border-radius: 10px;
     padding: 14px 20px;
     text-align: center;
     font-size: 1.1rem;
     font-weight: 600;
-    color: #e8f5d0;
+    color: #d5f1d5;
     letter-spacing: 0.04em;
-    border: 1px solid #3a5214;
+    border: 1px solid rgba(107,143,43,0.35);
   }
 
   .lobby-code-box {
-    background: #1e2c0c;
+    background: rgba(0,0,0,0.30);
     border-radius: 10px;
     padding: 24px 20px 20px;
     text-align: center;
-    border: 1px solid #3a5214;
+    border: 1px solid rgba(107,143,43,0.35);
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -191,7 +191,7 @@
   .lobby-code-label {
     font-size: 0.75rem;
     font-weight: 600;
-    color: #a8d05f;
+    color: #6b8f2b;
     text-transform: uppercase;
     letter-spacing: 0.12em;
     margin: 0;
@@ -213,7 +213,7 @@
     justify-content: center;
     gap: 8px;
     font-size: 0.9rem;
-    color: #a8d05f;
+    color: #6b8f2b;
     font-weight: 500;
   }
 
@@ -221,8 +221,8 @@
     display: inline-block;
     width: 14px;
     height: 14px;
-    border: 2px solid #a8d05f40;
-    border-top-color: #a8d05f;
+    border: 2px solid #6b8f2b40;
+    border-top-color: #6b8f2b;
     border-radius: 50%;
     animation: lobby-spin 0.8s linear infinite;
   }
@@ -243,7 +243,7 @@
     align-items: center;
     gap: 7px;
     font-size: 0.85rem;
-    color: #c8e89a;
+    color: #d5f1d5;
     font-weight: 500;
   }
 
@@ -257,8 +257,8 @@
   }
 
   .lobby-dot--active {
-    background: #a8d05f;
-    box-shadow: 0 0 6px #a8d05f80;
+    background: #6b8f2b;
+    box-shadow: 0 0 6px #6b8f2b80;
   }
 
   .lobby-copy-btn {
@@ -267,7 +267,7 @@
     gap: 6px;
     background: transparent;
     border: none;
-    color: #c8e89a;
+    color: #d5f1d5;
     font-size: 0.85rem;
     font-weight: 600;
     cursor: pointer;
@@ -309,9 +309,9 @@
     bottom: 32px;
     left: 50%;
     transform: translateX(-50%) translateY(16px);
-    background: #253510;
-    color: #e8f5d0;
-    border: 1px solid #a8d05f60;
+    background: rgba(0,0,0,0.75);
+    color: #d5f1d5;
+    border: 1px solid #6b8f2b60;
     border-radius: 8px;
     padding: 10px 20px;
     font-size: 0.875rem;

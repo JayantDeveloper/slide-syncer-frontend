@@ -33,13 +33,13 @@
 .tdb-title {
   font-size: 1.4rem;
   font-weight: 700;
-  color: #e8f5d0;
+  color: #d5f1d5;
   margin: 0;
 }
 
 .tdb-count {
   font-size: 0.85rem;
-  color: #a8d05f;
+  color: #6b8f2b;
   font-weight: 500;
 }
 
@@ -54,7 +54,7 @@
 }
 
 .tdb-grid::-webkit-scrollbar { width: 6px; }
-.tdb-grid::-webkit-scrollbar-thumb { background: #4a7020; border-radius: 3px; }
+.tdb-grid::-webkit-scrollbar-thumb { background: #6b8f2b; border-radius: 3px; }
 
 /* Code preview scrollbar */
 .card-code-block pre::-webkit-scrollbar { width: 4px; }
@@ -69,8 +69,8 @@
 /* ── Student card ────────────────────────────────────────────── */
 
 .student-card {
-  background: #eaf5d0;
-  border: 1px solid #b8d880;
+  background: #d5f1d5;
+  border: 1px solid #6b8f2b;
   border-radius: 12px;
   cursor: pointer;
   transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s, background 0.15s;
@@ -85,7 +85,7 @@
 
 /* Accent left border by status */
 .student-card--empty  { border-left: 3px solid #4b5563; }
-.student-card--coding { border-left: 3px solid #a8d05f; }
+.student-card--coding { border-left: 3px solid #6b8f2b; }
 .student-card--ran    { border-left: 3px solid #3b82f6; }
 .student-card--error  { border-left: 3px solid #f59e0b; }
 
@@ -109,7 +109,7 @@
 .card-name {
   font-weight: 600;
   font-size: 0.9rem;
-  color: #1e3a08;
+  color: #1a2b08;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -117,7 +117,7 @@
 
 .card-timestamp {
   font-size: 0.72rem;
-  color: #5a8020;
+  color: #6b8f2b;
   white-space: nowrap;
   flex-shrink: 0;
 }
@@ -132,7 +132,7 @@
 }
 
 .status-dot--empty  { background: #4b5563; }
-.status-dot--coding { background: #a8d05f; box-shadow: 0 0 5px #a8d05f80; }
+.status-dot--coding { background: #6b8f2b; box-shadow: 0 0 5px #6b8f2b80; }
 .status-dot--ran    { background: #3b82f6; box-shadow: 0 0 5px #3b82f660; }
 .status-dot--error  { background: #f59e0b; box-shadow: 0 0 5px #f59e0b60; }
 .status-dot--white  { background: rgba(255,255,255,0.85); }
@@ -150,7 +150,7 @@
 }
 
 .status-pill--empty  { background: #e5e7eb; color: #4b5563; border: 1px solid #d1d5db; }
-.status-pill--coding { background: #dcf5a0; color: #3a6010; border: 1px solid #8ab840; }
+.status-pill--coding { background: #d5f1d5; color: #1a2b08; border: 1px solid #6b8f2b; }
 .status-pill--ran    { background: #dbeafe; color: #1d4ed8; border: 1px solid #93c5fd; }
 .status-pill--error  { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
 
@@ -190,16 +190,16 @@
   align-items: center;
   justify-content: center;
   gap: 16px;
-  color: #4a6b1a;
+  color: #6b8f2b;
 }
 
 .tdb-empty svg {
-  color: #4a7020;
+  color: #6b8f2b;
 }
 
 .tdb-empty p {
   font-size: 1rem;
   font-weight: 500;
-  color: #6b9a30;
+  color: #d5f1d5;
   margin: 0;
 }
