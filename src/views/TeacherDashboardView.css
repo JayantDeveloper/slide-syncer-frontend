@@ -56,6 +56,11 @@
 .tdb-grid::-webkit-scrollbar { width: 6px; }
 .tdb-grid::-webkit-scrollbar-thumb { background: #4a7020; border-radius: 3px; }
 
+/* Give the bottom nav bar the same side/bottom spacing as slide-area views */
+.tdb-container > .slide-controls {
+  margin: 0 12px 12px;
+}
+
 /* ── Student card ────────────────────────────────────────────── */
 
 .student-card {
@@ -147,8 +152,8 @@
 /* ── Code preview block ──────────────────────────────────────── */
 
 .card-code-block {
-  background: #d5eab0;
-  border-top: 1px solid #b0cc80;
+  background: #1a3a08;
+  border-top: 1px solid #3a6014;
   padding: 10px 14px;
 }
 
@@ -156,7 +161,7 @@
   font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
   font-size: 0.72rem;
   line-height: 1.55;
-  color: #2a4a10;
+  color: #b0cc90;
   white-space: pre-wrap;
   word-break: break-all;
   margin: 0;
