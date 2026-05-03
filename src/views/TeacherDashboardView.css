@@ -56,6 +56,11 @@
 .tdb-grid::-webkit-scrollbar { width: 6px; }
 .tdb-grid::-webkit-scrollbar-thumb { background: #4a7020; border-radius: 3px; }
 
+/* Code preview scrollbar */
+.card-code-block pre::-webkit-scrollbar { width: 4px; }
+.card-code-block pre::-webkit-scrollbar-track { background: transparent; }
+.card-code-block pre::-webkit-scrollbar-thumb { background: #555; border-radius: 2px; }
+
 /* Give the bottom nav bar the same side/bottom spacing as slide-area views */
 .tdb-container > .slide-controls {
   margin: 0 12px 12px;

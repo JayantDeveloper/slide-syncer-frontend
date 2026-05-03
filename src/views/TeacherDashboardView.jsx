@@ -154,7 +154,8 @@ export default function TeacherDashboardView() {
                           fontSize: "0.72rem",
                           lineHeight: "1.55",
                           maxHeight: "100px",
-                          overflow: "hidden",
+                          overflowY: "auto",
+                          overflowX: "hidden",
                         }}
                         codeTagProps={{ style: { fontFamily: "'Fira Code', 'Monaco', 'Consolas', monospace" } }}
                       >
