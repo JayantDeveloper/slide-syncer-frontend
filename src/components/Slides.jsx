@@ -2,7 +2,7 @@ import React, { useCallback, useState } from "react";
 import "./Slides.css";
 import { BACKEND_BASE_URL } from "../config";
 
-function Slides({ isTeacher, slides = [], currentIndex = 0, sessionCode, loading = false, error = null }) {
+function Slides({ isTeacher, slides = [], currentIndex = 0, sessionCode, loading = false, error = null, onSessionIdClick }) {
   const [aspectRatio, setAspectRatio] = useState(null);
 
   const handleImageLoad = useCallback((e) => {
@@ -20,7 +20,13 @@ function Slides({ isTeacher, slides = [], currentIndex = 0, sessionCode, loading
 
   return (
     <div className="slides-container">
-      <h2 className="session-id">Session: {sessionCode}</h2>
+      {onSessionIdClick ? (
+        <button className="session-id session-id--clickable" onClick={onSessionIdClick}>
+          Session: {sessionCode}
+        </button>
+      ) : (
+        <h2 className="session-id">Session: {sessionCode}</h2>
+      )}
       <div
         className="slide-frame"
         style={aspectRatio ? { aspectRatio } : undefined}

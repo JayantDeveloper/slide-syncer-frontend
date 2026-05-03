@@ -15,7 +15,27 @@
   margin: 12px 0;
   font-size: 16px;
   color: #333;
-  flex: 0 0 auto;        /* don’t steal space from the slide frame */
+  flex: 0 0 auto;
+}
+
+.session-id--clickable {
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: 0.06em;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  padding: 4px 10px;
+  border-radius: 6px;
+  transition: background 0.15s;
+  font-family: inherit;
+  flex: 0 0 auto;
+  margin: 12px 0;
+}
+.session-id--clickable:hover {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 /* The frame should fill remaining space and width of its parent */

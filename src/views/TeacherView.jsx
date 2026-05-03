@@ -151,6 +151,7 @@ export default function TeacherView() {
               slides={slides}
               currentIndex={currentIndex}
               isTeacher
+              onSessionIdClick={() => setShowModal(true)}
             />
           )}
         </div>
@@ -159,14 +160,6 @@ export default function TeacherView() {
           editorsLocked={editorsLocked}
           onToggleLock={toggleLock}
           leftButtons={[
-            <button
-              key="code-chip"
-              className="lobby-code-chip"
-              onClick={() => setShowModal(true)}
-              title="Click to reopen session info"
-            >
-              {sessionCode}
-            </button>,
             <button
               key="prev"
               className="nav-btn nav-btn--ghost"
