@@ -29,8 +29,8 @@
     align-items: center;
     margin-top: 12px;
     padding: 10px;
-    background-color: #1e3510;
-    border-top: 1px solid #2a4a16;
+    background-color: #385e1e;
+    border-top: 1px solid #4a7a28;
     border-radius: 8px;
   }
 
@@ -51,63 +51,62 @@
     transition: background 0.15s, border-color 0.15s, color 0.15s;
   }
 
-  /* Previous / Next — ghost outline */
+  /* Prev / Next / back-nav — dark inset green */
   .nav-btn--ghost {
-    background: white;
-    border: 1.5px solid #b8d080;
-    color: #4a6b1a;
+    background: #1e3a0e;
+    border: 1.5px solid #2a5014;
+    color: #c8e89a;
   }
   .nav-btn--ghost:hover:not(:disabled) {
-    background: #f0f7e6;
-    border-color: #6b8f2b;
+    background: #264a14;
+    border-color: #3a6a1c;
   }
   .nav-btn--ghost:disabled {
     opacity: 0.35;
     cursor: default;
   }
 
-  /* Open Dashboard — solid primary green */
+  /* Dashboard — solid mid green */
   .nav-btn--primary {
-    background: #6b8f2b;
+    background: #4a7a20;
     border: 1.5px solid transparent;
     color: white;
   }
   .nav-btn--primary:hover {
-    background: #5a7a23;
+    background: #3e6a1a;
   }
 
-  /* Student View — outlined blue-tinted */
+  /* Student View — solid blue */
   .nav-btn--outline-blue {
-    background: white;
-    border: 1.5px solid #3b82f6;
-    color: #1d4ed8;
+    background: #2563eb;
+    border: 1.5px solid transparent;
+    color: white;
   }
   .nav-btn--outline-blue:hover {
-    background: #eff6ff;
+    background: #1d4ed8;
   }
 
-  /* Lock Editors — unlocked state (muted green outline) */
+  /* Lock Editors — unlocked: solid green */
   .nav-btn--lock-off {
-    background: white;
-    border: 1.5px solid #a8c46e;
-    color: #4a6b1a;
+    background: #4a7a20;
+    border: 1.5px solid transparent;
+    color: white;
   }
   .nav-btn--lock-off:hover {
-    background: #f0f7e6;
-    border-color: #6b8f2b;
+    background: #3e6a1a;
   }
 
-  /* Lock Editors — locked state (amber) */
+  /* Lock Editors — locked: solid amber */
   .nav-btn--lock-on {
-    background: #92400e;
+    background: #b45309;
     border: 1.5px solid transparent;
     color: white;
   }
   .nav-btn--lock-on:hover {
-    background: #78350f;
+    background: #92400e;
   }
 
-  /* End Session — destructive red */
+  /* End Session — solid red */
   .nav-btn--danger {
     background: #c0392b;
     border: 1.5px solid transparent;
@@ -117,18 +116,18 @@
     background: #a93226;
   }
 
-  /* Student count badge */
+  /* Student count badge — dark pill */
   .student-count {
     display: inline-flex;
     align-items: center;
     gap: 5px;
     font-weight: 600;
     padding: 6px 11px;
-    background-color: #f1f3f5;
+    background-color: #1e3a0e;
     border-radius: 6px;
     font-size: 0.85rem;
-    color: #374151;
-    border: 1px solid #e5e7eb;
+    color: #a8d05f;
+    border: 1.5px solid #2a5014;
   }
 
   .teacher-loading {
