@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useContext } from "react";
 import Slides from "../components/Slides";
 import EditorPane from "../components/EditorPane";
 import RunButton from "../components/RunButton";
@@ -6,6 +6,7 @@ import TerminalPane from "../components/TerminalPane";
 import "./StudentView.css";
 import { useParams } from "react-router-dom";
 import { BACKEND_BASE_URL } from "../config";
+import { TerminalContext } from "../context";
 
 const STARTER_CODE = {
   python: `# Write your code here\nprint("Hello, World!")\n`,
@@ -30,6 +31,7 @@ export default function StudentView() {
   const [sessionEnded, setSessionEnded] = useState(false);
 
   const wsRef = useRef(null);
+  const { terminal } = useContext(TerminalContext);
 
   useEffect(() => {
     fetch(`${BACKEND_BASE_URL}/slides/${sessionCode}/index.json`)
@@ -83,11 +85,12 @@ export default function StudentView() {
     const wsUrl = BACKEND_BASE_URL.replace(/^http/, "ws");
     const ws = new WebSocket(wsUrl);
     wsRef.current = ws;
-    ws.onopen = () => ws.send(JSON.stringify({ type: "join", sessionCode }));
+    ws.onopen = () => ws.send(JSON.stringify({ type: "join", sessionCode, studentId }));
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
       if (data.type === "lock-editors" && data.sessionCode === sessionCode) setEditorLocked(!!data.locked);
       if (data.type === "sync") setPendingSlideIndex(data.slide);
+      if (data.type === "code-override") setEditorContent(data.code);
       if (data.type === "session-ended" && data.sessionCode === sessionCode) {
         setSessionEnded(true);
         try { ws.close(); } catch {}
@@ -101,7 +104,9 @@ export default function StudentView() {
     if (sessionEnded || pendingSlideIndex === null || codingSlides.length === 0) return;
     setCurrentSlideIndex(pendingSlideIndex);
     setEditorContent(codingSlides.includes(pendingSlideIndex) ? (STARTER_CODE[language] || STARTER_CODE.python) : "");
-  }, [pendingSlideIndex, codingSlides, sessionEnded, language]);
+    setOutput("");
+    if (terminal) terminal.reset();
+  }, [pendingSlideIndex, codingSlides, sessionEnded, language, terminal]);
 
   useEffect(() => {
     if (sessionEnded) return;

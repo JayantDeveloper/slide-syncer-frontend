@@ -181,7 +181,7 @@ export default function TeacherDashboardView() {
         leftButtons={[
           <button
             key="presentation"
-            onClick={() => navigate(`/teacher/${sessionCode}`)}
+            onClick={() => navigate(`/teacher/${sessionCode}?live=true`)}
             className="nav-btn nav-btn--ghost"
           >
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">

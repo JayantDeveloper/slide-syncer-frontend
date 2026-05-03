@@ -3,15 +3,7 @@ import "../views/TeacherView.css";
 import { BACKEND_BASE_URL } from "../config";
 
 export default function NavigationBar({ leftButtons, sessionCode, editorsLocked, onToggleLock }) {
-  const [slidesUrl, setSlidesUrl] = useState("");
   const [studentCount, setStudentCount] = useState(0);
-
-  useEffect(() => {
-    fetch(`${BACKEND_BASE_URL}/slides/${sessionCode}/meta.json`)
-      .then((res) => res.json())
-      .then((data) => setSlidesUrl(data.slidesUrl))
-      .catch((err) => console.error("Failed to fetch meta.json:", err));
-  }, [sessionCode]);
 
   useEffect(() => {
     const fetchStudentCount = async () => {
@@ -43,11 +35,7 @@ export default function NavigationBar({ leftButtons, sessionCode, editorsLocked,
         ws.close();
       };
 
-      if (slidesUrl) {
-        window.location.href = slidesUrl;
-      } else {
-        alert("Session ended. No Slides URL found for redirect.");
-      }
+      window.location.href = "https://www.codekiwi.tech/home";
     } catch (e) {
       console.error(e);
       alert("Could not end session. Please try again.");

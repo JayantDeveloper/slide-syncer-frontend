@@ -140,14 +140,15 @@
     background: #1a2b08;
   }
 
-  /* ── Lobby overlay ──────────────────────────────────────────────── */
+  /* ── Lobby overlay (modal over slides) ──────────────────────────── */
 
   .lobby-overlay {
     position: fixed;
     inset: 0;
-    background: #1a2b08;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
     z-index: 200;
@@ -155,14 +156,60 @@
   }
 
   .lobby-card {
-    width: min(560px, 92vw);
-    background: rgba(107,143,43,0.18);
+    position: relative;
+    width: min(520px, 92vw);
+    background: rgba(26, 43, 8, 0.92);
+    border: 1px solid rgba(107,143,43,0.35);
     border-radius: 16px;
     padding: 32px;
     display: flex;
     flex-direction: column;
     gap: 20px;
-    box-shadow: 0 24px 64px rgba(0,0,0,0.5);
+    box-shadow: 0 24px 64px rgba(0,0,0,0.6);
+  }
+
+  .lobby-close-btn {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: #d5f1d5;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s;
+  }
+  .lobby-close-btn:hover { background: rgba(255,255,255,0.16); }
+
+  /* Session code chip in nav bar */
+  .lobby-code-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(0,0,0,0.25);
+    border: 1.5px solid rgba(107,143,43,0.45);
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 7px 13px;
+    border-radius: 6px;
+    cursor: pointer;
+    letter-spacing: 0.08em;
+    font-variant-numeric: tabular-nums;
+    transition: background 0.15s;
+  }
+  .lobby-code-chip:hover { background: rgba(0,0,0,0.38); }
+
+  /* Inline loading/error inside slide-box */
+  .teacher-loading-inline {
+    font-size: 1rem;
+    color: rgba(107,143,43,0.6);
+    font-family: system-ui, -apple-system, sans-serif;
   }
 
   .lobby-url-box {

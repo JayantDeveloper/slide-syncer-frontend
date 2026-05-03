@@ -80,12 +80,10 @@ export default function TeacherInspectCode() {
   }, [studentId]);
 
   const saveEdit = async () => {
-    const student = students.find((s) => s.id === studentId);
-    if (!student) return;
-    await fetch(`${BACKEND_BASE_URL}/api/sessions/${sessionCode}/code`, {
+    await fetch(`${BACKEND_BASE_URL}/api/sessions/${sessionCode}/students/${studentId}/override`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ studentId, name: student.name, code: editCode, output }),
+      body: JSON.stringify({ code: editCode }),
     });
     setCode(editCode);
     setEditing(false);
@@ -119,7 +117,7 @@ export default function TeacherInspectCode() {
   }, []);
 
   useEffect(() => {
-    if (!sessionCode || !studentId) return;
+    if (!sessionCode || !studentId || editing) return;
     const fetchData = async () => {
       try {
         const res = await fetch(
@@ -150,7 +148,7 @@ export default function TeacherInspectCode() {
     fetchData();
     const interval = setInterval(fetchData, 3000);
     return () => clearInterval(interval);
-  }, [sessionCode, studentId]);
+  }, [sessionCode, studentId, editing]);
 
   const currentStudentIdx = students.findIndex((s) => s.id === studentId);
   const prevStudent = currentStudentIdx > 0 ? students[currentStudentIdx - 1] : null;
@@ -296,7 +294,7 @@ export default function TeacherInspectCode() {
           leftButtons={[
             <button
               key="presentation"
-              onClick={() => navigate(`/teacher/${sessionCode}`)}
+              onClick={() => navigate(`/teacher/${sessionCode}?live=true`)}
               className="nav-btn nav-btn--ghost"
             >
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
